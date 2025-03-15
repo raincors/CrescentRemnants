@@ -4,15 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "AwakeningGameMode.generated.h"
+#include "CrescentRemnantsGameMode.generated.h"
 
 UCLASS(minimalapi)
-class AAwakeningGameMode : public AGameModeBase
+class ACrescentRemnantsGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
 public:
-	AAwakeningGameMode();
+	ACrescentRemnantsGameMode();
 };
 
 

@@ -1,10 +1,10 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "AwakeningGameMode.h"
-#include "AwakeningCharacter.h"
+#include "CrescentRemnantsGameMode.h"
+#include "CrescentRemnantsCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 
-AAwakeningGameMode::AAwakeningGameMode()
+ACrescentRemnantsGameMode::ACrescentRemnantsGameMode()
 {
 	// set default pawn class to our Blueprinted character
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/ThirdPerson/Blueprints/BP_ThirdPersonCharacter"));

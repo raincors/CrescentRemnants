@@ -5,7 +5,7 @@
 	"Description": "",
 	"Modules": [
 		{
-			"Name": "Awakening",
+			"Name": "CrescentRemnants",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}
