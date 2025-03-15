@@ -87,3 +87,7 @@ DerivedDataCache/*
 .idea/**/dynamic.xml
 .idea/**/uiDesigner.xml
 .idea/**/dbnavigator.xml
+
+# Ignored folders
+/Windows
+/.idea
