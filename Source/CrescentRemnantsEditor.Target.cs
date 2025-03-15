@@ -3,13 +3,13 @@
 using UnrealBuildTool;
 using System.Collections.Generic;
 
-public class AwakeningEditorTarget : TargetRules
+public class CrescentRemnantsEditorTarget : TargetRules
 {
-	public AwakeningEditorTarget(TargetInfo Target) : base(Target)
+	public CrescentRemnantsEditorTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V5;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_5;
-		ExtraModuleNames.Add("Awakening");
+		ExtraModuleNames.Add("CrescentRemnants");
 	}
 }

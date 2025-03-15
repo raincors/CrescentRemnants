@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class Awakening : ModuleRules
+public class CrescentRemnants : ModuleRules
 {
-	public Awakening(ReadOnlyTargetRules Target) : base(Target)
+	public CrescentRemnants(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
