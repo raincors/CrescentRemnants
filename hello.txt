@@ -1,4 +1,0 @@
--
-This is line 2, and I like to write it like this. : )
-Hello line 3.
-Line 4 reporting in!
