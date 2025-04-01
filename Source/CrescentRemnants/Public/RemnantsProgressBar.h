@@ -3,7 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "RemnantHUD.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/ProgressBar.h"
 #include "RemnantsProgressBar.generated.h"
 
 /**
