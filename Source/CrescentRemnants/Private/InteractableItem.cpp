@@ -51,9 +51,10 @@ AInteractableItem::AInteractableItem()
 	PointLight->SetupAttachment(Root);
 	
 	PointLight->SetVisibility(true);
-	PointLight->SetAttenuationRadius(100.0f);
+	PointLight->SetAttenuationRadius(LightAttenuationRadius);
 	PointLight->SetIntensity(LightIntensity);
-
+	
+	// If it's a pickup, these other bools can't be utilized properly.
     if (bIsAPickup)
     {
 	    bDestroyOnInteract = false;
