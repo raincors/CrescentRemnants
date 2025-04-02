@@ -9,6 +9,7 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
+				"UMG",
 				"Engine"
 			]
 		}
@@ -20,6 +21,10 @@
 			"TargetAllowList": [
 				"Editor"
 			]
+		},
+		{
+			"Name": "Fab",
+			"Enabled": false
 		}
 	]
 }
