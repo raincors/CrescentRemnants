@@ -24,7 +24,7 @@ AInteractableItem::AInteractableItem()
 	ObjectMesh->SetupAttachment(Root);
 	
 	// Using ConstructorHelper to help find the right mesh to set for our object, via the header "UObject/ConstructorHelpers.h".
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshAsset(TEXT("Static Mesh'/Engine/BasicShapes/Cube.Cube'"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshAsset(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_QuadPyramid.Shape_QuadPyramid'"));
 	if (MeshAsset.Succeeded())
 	{
 		ObjectMesh->SetStaticMesh(MeshAsset.Object);
