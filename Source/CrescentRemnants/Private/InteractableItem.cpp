@@ -52,7 +52,7 @@ AInteractableItem::AInteractableItem()
 	
 	PointLight->SetVisibility(true);
 	PointLight->SetAttenuationRadius(100.0f);
-	PointLight->SetIntensity(200.0f);
+	PointLight->SetIntensity(LightIntensity);
 
     if (bIsAPickup)
     {

@@ -54,6 +54,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Bools & Interaction")
 	float OverlapSphereLength = 65.f;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Light")
+	float LightIntensity = 500.f;
+
 	// Toggle whether the object destroys itself on interact (editable from Details panel, thanks to EditAnywhere)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bools & Interaction")
 	bool bDestroyOnInteract = false;
