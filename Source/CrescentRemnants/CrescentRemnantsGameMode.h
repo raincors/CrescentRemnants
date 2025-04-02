@@ -13,6 +13,7 @@ class ACrescentRemnantsGameMode : public AGameModeBase
 
 public:
 	ACrescentRemnantsGameMode();
+	virtual void StartPlay() override;
 };
 
 
