@@ -29,6 +29,5 @@ void AEnemyAI::Tick(float DeltaTime)
 
 FVector AEnemyAI::GetPlayerPos()
 {
-	
-	return
+	return GetActorLocation();
 }
