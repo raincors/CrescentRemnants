@@ -134,7 +134,7 @@ void AGuardianController::BindInputs(AGuardianCharacter* GuardianCharacter, UEnh
 	if (GetIA_Run())
 	{
 		EnhancedInputComponent->BindAction(GetIA_Run(), ETriggerEvent::Triggered, GuardianCharacter, &AGuardianCharacter::GuardianRun);
-		EnhancedInputComponent->BindAction(GetIA_Run(), ETriggerEvent::Completed, GuardianCharacter, &AGuardianCharacter::GuardianRun);
+		EnhancedInputComponent->BindAction(GetIA_Run(), ETriggerEvent::Completed, GuardianCharacter, &AGuardianCharacter::GuardianStopRun);
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("❌ IA_Run is NULL!")); }
 

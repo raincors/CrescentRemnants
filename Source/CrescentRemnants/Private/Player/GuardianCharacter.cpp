@@ -33,11 +33,29 @@ AGuardianCharacter::AGuardianCharacter()
 	// Setting up our collision capsule from CharacterMovementComponent, and making it the rootComponent
 	GuardianCapsuleComponent = GetCapsuleComponent();
 	GuardianCapsuleComponent->InitCapsuleSize(PlayerCapsuleColliderRadius, PlayerCapsuleColliderHalfHeight);
-	GuardianCapsuleComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	GuardianCapsuleComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
-	GuardianCapsuleComponent->SetCollisionObjectType(ECC_Pawn);
-	
+
+	// Have to set the root component!
 	SetRootComponent(GuardianCapsuleComponent);
+	
+	// Now this below collision stuff is wack stuff, thank god we have ChatGPT:
+		// PS. You can have custom collision channels too.
+	
+	// Set our collision type:
+	// QueryOnly would do overlaps and traces, but block nothing; PhysicsOnly would be great for physics simulations,
+	// NoCollision explains itself and QueryAndPhysics gets overlaps and blocking (best for characters).
+	GuardianCapsuleComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	
+	// What kind of object are we? ECC_Pawn works for Characters, ECC_WorldStatic are for Walls/Floor, ECC_WorldDynamic
+	// are for things that move or interact. Use ECollisionChannel:: to find more options.
+	GuardianCapsuleComponent->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
+
+	// What is our default response to collisions? Block. (ECR_Ignore, ECR_Block, ECR_MAX, and ECR_Overlap etc.)
+	// Block makes sure we collide with most items (avoid falling through the ground).
+	GuardianCapsuleComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+
+	// Except... We don't want to block pickups and other dynamic objects! They're in the WorldDynamic channel,
+	// and we set our response to that channel to be ECR_Overlap.
+	GuardianCapsuleComponent->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
 	
 	// Setting up our Guardian mesh component (animated rig)
 	GuardianMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("GuardianMesh"));
@@ -79,8 +97,12 @@ AGuardianCharacter::AGuardianCharacter()
 	PickupRadiusSphere = CreateDefaultSubobject<USphereComponent>(TEXT("PickupSphere"));
 	PickupRadiusSphere->SetupAttachment(GuardianCapsuleComponent);
 	PickupRadiusSphere->InitSphereRadius(PickupRadiusLength);
-	PickupRadiusSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly); // Collision type for e.g. overlaps
-	PickupRadiusSphere->SetCollisionResponseToAllChannels(ECR_Overlap); // Only detects overlaps
+
+	// If you understand what we did above with the collision capsule, we're doing things a little bit different now
+	// for the overlap sphere that helps run item stuff:
+	PickupRadiusSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly); 
+	PickupRadiusSphere->SetCollisionResponseToAllChannels(ECR_Ignore); // Default ignores all.
+	PickupRadiusSphere->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap); // Except dynamic objects.
 	
 	// Set up Character Movement Component
 	if (GetCharacterMovement())
@@ -93,16 +115,18 @@ AGuardianCharacter::AGuardianCharacter()
 		GetCharacterMovement()->bOrientRotationToMovement = true; // Turns character in movement direction
 		GetCharacterMovement()->bUseControllerDesiredRotation = false;
 
+		GuardianCurrentSpeed = GuardianMoveSpeed;
+		
 		// Walking
-		GetCharacterMovement()->MaxWalkSpeed = 600.f; // Walking speed
-		GetCharacterMovement()->MaxStepHeight = 50.f; // Max step height
-		GetCharacterMovement()->SetWalkableFloorAngle(45.f);
+		GetCharacterMovement()->MaxWalkSpeed = GuardianCurrentSpeed; // Walking speed
+		GetCharacterMovement()->MaxStepHeight = 80.f; // Max step height
+		GetCharacterMovement()->SetWalkableFloorAngle(50.f);
 		GetCharacterMovement()->bCanWalkOffLedges = true; // Allow ledge climbing or walking off edges
 
 		// Jumping
-		GetCharacterMovement()->JumpZVelocity = 500.f; // Jumping speed
-		GetCharacterMovement()->AirControl = 0.5f; // Control mid-air
-		JumpMaxCount = 2;
+		GetCharacterMovement()->JumpZVelocity = GuardianJumpStrength; // Jumping speed
+		GetCharacterMovement()->AirControl = 0.2f; // Control mid-air
+		JumpMaxCount = 3;
 	}
     
 	// Disable physics simulation on the capsule and mesh, but still use CharacterMovement
@@ -156,7 +180,7 @@ void AGuardianCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	UE_LOG(LogTemp, Warning, TEXT("Guardian Mesh Collision: %s"), 
-	*UEnum::GetValueAsString(GuardianMeshComponent->GetCollisionEnabled()));
+	*UEnum::GetValueAsString(GuardianCapsuleComponent->GetCollisionEnabled()));
 
 	// Run timer for checking pickup items in given interval; and run the corresponding function CheckForNearbyPickups.
 	GetWorld()->GetTimerManager().SetTimer(PickupTimerHandle, this, &AGuardianCharacter::CheckForNearbyPickups, PickupCheckTimeInterval, true);
@@ -268,22 +292,26 @@ void AGuardianCharacter::GuardianMove(const FInputActionValue& Value)
 	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 	
-	FVector MoveDirection = (MovementVector.X * RightDirection) + (MovementVector.Y * ForwardDirection).GetSafeNormal();
+	FVector MoveDirection = (MovementVector.X * RightDirection + MovementVector.Y * ForwardDirection).GetSafeNormal();
 
 	// Apply movement velocity directly to the CharacterMovement component
 	GetCharacterMovement()->AddInputVector(MoveDirection);
 }
 
+// We just switch out WalkSpeed in CharacterMovementComponent with our runSpeed. :)
 void AGuardianCharacter::GuardianRun(const FInputActionValue& Value)
 {
 	GuardianCurrentSpeed = GuardianRunSpeed;
+	GetCharacterMovement()->MaxWalkSpeed = GuardianCurrentSpeed;
 
 	// TODO: Run functionality to be added. Just double the move speed or something -benjamin
 }
 
+// We just switch out WalkSpeed in CharacterMovementComponent with our walkSpeed. :)
 void AGuardianCharacter::GuardianStopRun(const FInputActionValue& Value)
 {
 	GuardianCurrentSpeed = GuardianMoveSpeed;
+	GetCharacterMovement()->MaxWalkSpeed = GuardianCurrentSpeed;
 }
 
 void AGuardianCharacter::GuardianJump(const FInputActionValue& Value)
@@ -323,26 +351,18 @@ void AGuardianCharacter::GuardianLook(const FInputActionValue& Value)
 // Doesn't have a parameter, since other "StartInteract()" functions receive those parameters. WiP.
 void AGuardianCharacter::GuardianInteract()
 {
-	// If... I have to manually find the playerLocation.
-	// FVector PlayerLocation = GetActorLocation();
 	
-	TArray<AActor*> OverlappingActors;
-	
-	// The below functions just detects if the PlayerCollision overlaps with an AInteractableItem.
-	GetOverlappingActors(OverlappingActors, AInteractableItem::StaticClass());
+	/* TArray<AActor*> NearbyInteractables;
+	// The below function just detects if the PlayerCollision overlaps with an AInteractableItem.
+	PickupRadiusSphere->GetOverlappingActors(NearbyInteractables, APickup::StaticClass());
 
-	for (AActor* Actor : OverlappingActors)
+	for (AActor* Interactable : NearbyInteractables)
 	{
-		if (AInteractableItem* Item = Cast<AInteractableItem>(Actor))
+		if (Interactable)
 		{ 
-			if (Item->bIsAPickup) continue;
-			Item->Interact();
 			UE_LOG(LogTemp, Warning, TEXT("Guardian is interacting with %s!"), *Item->GetName());
-			return;
 		}
-	}
-	
-	UE_LOG(LogTemp, Warning, TEXT("Guardian is interacting - but no interactable nearby!"));
+	} */
 }
 
 void AGuardianCharacter::GuardianEscape(const FInputActionValue& InputActionValue)
@@ -351,31 +371,18 @@ void AGuardianCharacter::GuardianEscape(const FInputActionValue& InputActionValu
 	
 }
 
-
-// TODO: Adapt the code to not just accept Interactables, but generally any AActor OR just interactables and pickups.
-// The code isn't used for the current BP_Interactable, since it just looks for casts of the player and deletes itself.
 void AGuardianCharacter::CheckForNearbyPickups()
 {
-	TArray<AActor*> NearbyItems;
-	PickupRadiusSphere->GetOverlappingActors(NearbyItems, AInteractableItem::StaticClass());
+	TArray<AActor*> NearbyWorldObjects;
+	PickupRadiusSphere->GetOverlappingActors(NearbyWorldObjects, AWorldObject::StaticClass());
 
-	for (AActor* Pickup : NearbyItems)
+	for (AActor* WorldObject : NearbyWorldObjects)
 	{
-		AInteractableItem* Item = Cast<AInteractableItem>(Pickup);
-		if (Item)
+		if (WorldObject)
 		{
-			// Gotta cast(?) the AActor found (which is filtered) to be AInteractableItem for the function.
-			Item->PickupItem();
+			UE_LOG(LogTemp, Warning, TEXT("Found WorldObject: %s"), *WorldObject->GetName());
 		}
 	}
-}
-
-// TODO: Implement this functionality later.
-// Same as with the above function, current functionality with BP_Interactable is all inside the BP.
-void AGuardianCharacter::PickupAnItem(AInteractableItem* Item)
-{
-	UE_LOG(LogTemp, Display, TEXT("PickupAnItem() from Guardian called to: %s"), *Item->GetName());
-	Item->PickupItem();
 }
 
 // TODO: Overall remove the extra tap / hold functionality for Interact? ...but I do like the timer. -benjamin
@@ -419,7 +426,6 @@ void AGuardianCharacter::PerformShortInteract()
 void AGuardianCharacter::PerformLongInteract()
 {
 	UE_LOG(LogTemp, Display, TEXT("Guardian does a long interact!"));
-	OnInteract(true);
 }
 
 /** TODO-List Benjamin before 8th of April - for functionality and polish, and can be checked as done via the emote 👍 
@@ -427,17 +433,18 @@ void AGuardianCharacter::PerformLongInteract()
  *	1. Move anything with input from GuardianCharacter to the GuardianController 👍
  *	2. Make the playerMesh appear so we can see where we are. 👍
  *	3. Ensure the player can collide with BP_Interactable 👍
- *	Do a playtest and ensure this GuardianCharacter and GuardianController can be used by others without big issues.
+ *	Do a playtest and ensure this GuardianCharacter and GuardianController can be used by others without big issues. 👍
  *
- *	4. Add own functional and smooth enough Jump + double Jump functionality. 👍
+ *	4. Modify CharacterMovementComponent, and do stuff = Jump + double Jump, pickups, interact, etc. 👍
  *	5. Moving Platforms functionality
- *	6. Checkpoints functionality
- *	7. Add minimum functional LedgeClimb functionality.
+ *	6. Checkpoints functionality - including full rework of Pickup, with derived InteractableItem & Checkpoints.
+ *	7. Player Death functionality
+ *	8. Add minimum functional LedgeClimb functionality.
  *
  *	--- For the polishing stage (after 8th of April): 🧼 ---
  *
  *	A. Add "PerchRadius" - the little extra bit the character can walk near a ledge to avoid falling off
- *	B. Make the player Animations run (assuming just adding a Static Mesh Component isn't enough).
+ *	B. Make the player Animations run (assuming just adding a Static Mesh Component isn't enough). 👍
  *  C. Add Echolocation of items functionality - to help envision and see where key objects are in your vision.
  *  D. Clean up old unused code, or functionality that is not needed.
  */
