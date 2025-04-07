@@ -9,20 +9,18 @@
 ACrescentRemnantsGameMode::ACrescentRemnantsGameMode()
 {
     // Set the default pawn class to my pure C++ character Guardian
-		DefaultPawnClass = AGuardianCharacter::StaticClass();
+		// DefaultPawnClass = AGuardianCharacter::StaticClass();
 
 	// Set the default HUD class to be our HUD class:
-		// HUDClass = AGuardianHUDClass::StaticClass();
-    HUDClass = ARemnantHUD::StaticClass();
+	// HUDClass = AGuardianHUDClass::StaticClass();
+    // HUDClass = ARemnantHUD::StaticClass();
 	// Set the default controller class to my own C++ controller for the enhanced input system
-		PlayerControllerClass = AGuardianController::StaticClass();
+	PlayerControllerClass = AGuardianController::StaticClass();
 
 	// Set the default Game State class to be:
-		// GameStateClass = AGameStateClassHere::StaticClass();
-    
+	// GameStateClass = AGameStateClassHere::StaticClass();
 	
-		// --- Blueprint versions:
-		// If I were to use a Blueprint class, I'd have to load it like this inside the constructor:
+	// In order to use a Blueprint class, I'd have to load it like this inside this constructor:
     	
     // Finding and locating the exact blueprint (be precise with syntax around the file path)
     static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/Blueprints/BP_GuardianCharacter"));
