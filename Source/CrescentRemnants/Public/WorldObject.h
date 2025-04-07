@@ -28,12 +28,15 @@ public:
 	// Sets default values for this actor's properties
 	AWorldObject();
 
-protected:
+	// Custom function - Use the DataAsset settings instead of constructor defaults
+	virtual bool UseWorldObjectAssetSettings();
 
-	// Shared settings asset for all world objects (to be overridden in subclasses)
+	// Shared settings asset for all world objects (to be overridden in subclasses) - public for WorldObjectSettings.cpp
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	TSoftObjectPtr<UWorldObjectSettings> SettingsAsset;
 
+protected:
+	
 	// Scene Root Component
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
 	TObjectPtr<USceneComponent> ObjectRoot;
@@ -70,9 +73,6 @@ protected:
 	// Object Scale for the object instance.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Transform", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
 	FVector RootObjectScale = FVector(1.f, 1.f, 1.f);
-
-	// Custom function - Use the DataAsset settings instead of constructor defaults
-	virtual bool UseWorldObjectAssetSettings();
 	
 	/** Runs in Editor whenever a property or its transform is modified -> Very often! Be aware of this.
 	* Also runs once in PlayMode before BeginPlay().

@@ -6,6 +6,8 @@
 #include "Engine/DataAsset.h"
 #include "WorldObjectSettings.generated.h"
 
+class AWorldObject;
+
 /**
  * This class is a template for when you create a Data Asset inside Unreal Engine (Under Miscellaneous).
  * In there, you can assign default meshes and stuff that classes can retrieve. Classes can also override 
@@ -16,6 +18,10 @@ class CRESCENTREMNANTS_API UWorldObjectSettings : public UDataAsset
 	GENERATED_BODY()
 
 public:
+
+	// Press this button while you're in the DataAsset to reload and see your changes. :)
+	UFUNCTION(CallInEditor, Category = "Settings")
+	void ApplySettingsToAllObjects();
 	
 	// 📝 Asset Settings
 	
