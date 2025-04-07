@@ -14,7 +14,6 @@ class CRESCENTREMNANTS_API AEnemyAI : public ACharacter
 public:
 	// Sets default values for this character's properties
 	AEnemyAI();
-	UPROPERTY(BlueprintReadWrite, category = "TestVariables") int testvar = 2;
 
 protected:
 	// Called when the game starts or when spawned
@@ -23,4 +22,7 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION(BlueprintCallable)
+	FVector GetPlayerPos();
 };

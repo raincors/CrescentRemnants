@@ -2,6 +2,8 @@
 
 
 #include "EnemyAI.h"
+#include "GameplayStatics.generated.h"
+#include "CrescentRemnantsCharacter.generated.h"
 
 // Sets default values
 AEnemyAI::AEnemyAI()
@@ -25,3 +27,8 @@ void AEnemyAI::Tick(float DeltaTime)
 
 }
 
+FVector AEnemyAI::GetPlayerPos()
+{
+	
+	return
+}
