@@ -2,136 +2,189 @@
 
 
 #include "InteractableItem.h"
-#include "Components/StaticMeshComponent.h"
-#include "Components/SphereComponent.h"
-#include "Components/PointLightComponent.h"
-#include "UObject/ConstructorHelpers.h"
-#include "Kismet/GameplayStatics.h"
 
-// Sets default values
+#include "Components/PointLightComponent.h"
+#include "Components/SphereComponent.h"
+#include "GameFramework/Character.h"
+
+/** Worth knowing is that any class deriving off of AWorldObject, runs its constructor to initialize components and apply
+ * a default set of variables. The C++ implementation of doing things; the back-up plan, or Plan B.
+ *
+ * All components initialized here in the constructor, will be inherited and already initialized for subclasses.
+ * Inherited classes should only add new components or modify the existing components.
+ */
 AInteractableItem::AInteractableItem()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame. Set to false as default in WorldObject.
 	PrimaryActorTick.bCanEverTick = true;
 
-	// Create Root SceneComponent
-	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-	// Setting up the RootComponent the other components attach to. Always needs to be one, and should be SceneComponent.
-	SetRootComponent(Root);
+	bOneTimeUseOnly = false;
 
-	// Create StaticMeshComponent, and attaching it to the root (is done with all components after sceneComponent)
-	ObjectMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ObjectMesh"));
-	ObjectMesh->SetupAttachment(Root);
+	// Changing the inherited CapsuleCompSize to be the default Interactable settings
+	ObjectCapsuleComp->SetCapsuleSize(InteractableCapsuleRadius, InteractableCapsuleHalfHeight);
 	
-	// Using ConstructorHelper to help find the right mesh to set for our object, via the header "UObject/ConstructorHelpers.h".
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshAsset(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_QuadPyramid.Shape_QuadPyramid'"));
-	if (MeshAsset.Succeeded())
+	// Setting a constructor default DebugColour and LightColour
+	DebugColour = FColor::Green;
+	LightColour = FColor::Emerald;
+	
+	// InteractableOverlapSphere = CreateDefaultSubobject<USphereComponent>(TEXT("InteractableOverlapSphere"));
+
+	if (InteractableOverlapSphere)
 	{
-		ObjectMesh->SetStaticMesh(MeshAsset.Object);
-		ObjectMesh->SetWorldScale3D(FVector(0.5f, 0.5f, 0.5f));
+		InteractableOverlapSphere->SetupAttachment(ObjectRoot);
+		InteractableOverlapSphere->InitSphereRadius(InteractableOverlapSphereRadius);
 	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("❌ Failed to load object mesh"));
-	}
-
-	// Ensure correct relative transform of ObjectMesh
-	ObjectMesh->SetRelativeLocation(FVector(0, 0, 0));
-
-	// Create CollisionSphere Component (to enable interactions)
-	OverlapSphere = CreateDefaultSubobject<USphereComponent>(TEXT("OverlapSphere"));
-	OverlapSphere->SetupAttachment(Root);
-	
-	OverlapSphere->SetSphereRadius(OverlapSphereLength);
-	OverlapSphere->SetGenerateOverlapEvents(true);
-	OverlapSphere->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
-
-	// Create PointLight Component
-	PointLight = CreateDefaultSubobject<UPointLightComponent>(TEXT("PointLight"));
-	PointLight->SetupAttachment(Root);
-	
-	PointLight->SetVisibility(true);
-	PointLight->SetAttenuationRadius(LightAttenuationRadius);
-	PointLight->SetIntensity(LightIntensity);
-	
-	// If it's a pickup, these other bools can't be utilized properly.
-    if (bIsAPickup)
-    {
-	    bDestroyOnInteract = false;
-    	bToggleLight = false;
-    }
 }
 
-// Called when the game starts or when spawned
+bool AInteractableItem::UseWorldObjectAssetSettings()
+{
+	if (!Super::UseWorldObjectAssetSettings())
+	{
+		return false;
+	}
+
+	// Different flags, interaction-based.
+	bDestroyOnInteract = SettingsAsset->bDestroyOnInteract;
+	bInteractionTogglesLight = SettingsAsset->bInteractionTogglesLight;
+	bIsActivated = SettingsAsset->bIsActivated;
+
+	// Can we see the OverlapSphere in PlayMode?
+	bDebugIsOverlapSphereVisible = SettingsAsset->bDebugIsSphereCollisionVisible;
+
+	// InteractableOverlapSphere
+	InteractableOverlapSphereRadius = SettingsAsset->DefaultSphereRadius;
+
+	if (InteractableOverlapSphere)
+	{
+		InteractableOverlapSphere->SetSphereRadius(InteractableOverlapSphereRadius);
+		InteractableOverlapSphere->ShapeColor = DebugColour;
+		InteractableOverlapSphere->SetHiddenInGame(bDebugIsOverlapSphereVisible);
+	}
+
+	// TODO: Add Interactable World Settings that needs to be stored locally or something.
+
+	
+	return true;
+}
+
 void AInteractableItem::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	// We want to enable InteractableItems to be able to collide with the player. Doing it on BeginPlay for now.
+	ObjectMeshComp->SetCollisionProfileName(GetMeshCollisionTag());
 }
 
-void AInteractableItem::Interact()
+void AInteractableItem::Tick(float DeltaTime)
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s was interacted with by %s"), *GetName(), *UGameplayStatics::GetPlayerPawn(this, 0)->GetName());
+	Super::Tick(DeltaTime);
+}
+
+#if WITH_EDITOR
+
+void AInteractableItem::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	if (bDebugEnabled)
+	{
+		// If Debugging is enabled, draw debug.
+		if (InteractableOverlapSphere && bDebugIsOverlapSphereVisible)
+		{
+			DrawDebugSphere(GetWorld(), GetActorLocation(), InteractableOverlapSphereRadius, 8, FColor::Green,
+				false, -1, 0, 1.f);
+		}
+	}
+	else
+	{
+		bDebugIsOverlapSphereVisible = false;
+	}
+}
+
+#endif
+
+void AInteractableItem::PlayerEntersInteractable()
+{
+	if (bIsActivated && bOneTimeUseOnly) return;
+	
+	Super::PlayerEntersInteractable();
+
+	ObjectPointLightComp->SetVisibility(bIsLightOn);
+	
+	if (!bIsActivated)
+	{
+		// Just making a random colour for fun. :)
+		ObjectPointLightComp->LightColor = FColor::MakeRandomColor();
+		
+		bIsActivated = true;
+	}
+	else 
+	{
+		bIsActivated = false;
+	}
+}
+	
+void AInteractableItem::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                       UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	// The PlayerEntersInteractable function runs from APickup.
+	Super::OnBeginOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
+}
+
+void AInteractableItem::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+									UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (OtherActor && Cast<ACharacter>(OtherActor))
+	{
+		if (bDebugEnabled)
+		{
+			FString objectName = this->GetName();
+			check(GEngine != nullptr);
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, DebugColour,TEXT("Player leaves me...! Remember me as " + objectName));
+		}
+		
+		// TODO: Play a simple animation everytime the player enters a checkpoint, just a little wiggle or something.
+	}
+}
+
+// Have to manually add in components and make sure they are cast safely
+TArray<UPrimitiveComponent*> AInteractableItem::GetAllOverlapComponents() const
+{
+	TArray<UPrimitiveComponent*> OverlapComponents;
+	OverlapComponents.Add(ObjectCapsuleComp.Get());
+	// OverlapComponents.Add(Cast<UPrimitiveComponent>(InteractableOverlapSphere.Get()));
+	
+	return OverlapComponents;
+}
+
+void AInteractableItem::OnPlayerInteract()
+{
+	UE_LOG(LogTemp, Warning, TEXT("%s was interacted with!"), *GetName());
 
 	// Play sound if assigned
-	if (InteractionSound)
+	/*if (InteractionSound)
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, InteractionSound, GetActorLocation());
-	}
+	}*/
 
 	// Toggle the light, if enabled on the object
-	if (bToggleLight)
+	if (bInteractionTogglesLight)
 	{
-		bLightOn = !bLightOn;
-		PointLight->SetVisibility(bLightOn);
-
-		if (bLightOn)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Light toggled: %s"), TEXT("ON"));
-			check(GEngine != nullptr);
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Lights going on."));
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Light toggled: %s"), TEXT("OFF"));
-			check(GEngine != nullptr);
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, TEXT("Lights going off."));
-		}
+		bIsLightOn = !bIsLightOn;
+		ObjectPointLightComp->SetVisibility(bIsLightOn);
 	}
 
 	// Destroy object if set to do so
 	if (bDestroyOnInteract)
 	{
-		FString objectName = this->GetName();
-		
-		check(GEngine != nullptr);
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Goodbye World! ...but remember me as " + objectName));
-		
+		if (bDebugEnabled)
+		{
+			FString objectName = this->GetName();
+			check(GEngine != nullptr);
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, DebugColour, TEXT("Goodbye World! ...but remember me as " + objectName));
+		}
 		Destroy();
 	}
 }
-
-// Since we're adding pick-up functionality to an interactable item, this really should have been split into
-// two separate classes. One for Interactables and one for pickups, but this works ok for this tiny project. :3
-void AInteractableItem::PickupItem()
-{
-	if (!bIsAPickup) return;
-
-	// Play sound if assigned
-	if (InteractionSound)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, InteractionSound, GetActorLocation());
-	}
-
-	// Alternative to "this->GetName()", but can't be built in Shipping!!! ⚠️
-	// For when GetName just returns "UAID" = Unreal Asset IDs.
-	// FString objectName = GetActorLabel();
 	
-	// Usually the below works., but now I get weird names, so we use the above line.
-	FString objectName = this->GetName();
-	
-	check(GEngine != nullptr);
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("I'm being picked up! ... remember me as " + objectName));
-		
-	Destroy();
-}
+

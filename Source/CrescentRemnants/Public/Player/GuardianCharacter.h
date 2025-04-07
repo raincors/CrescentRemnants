@@ -6,7 +6,6 @@
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
 #include "InputActionValue.h"
-#include "InteractableItem.h"
 #include "GuardianCharacter.generated.h"
 
 class UCapsuleComponent;
@@ -43,23 +42,23 @@ class CRESCENTREMNANTS_API AGuardianCharacter : public ACharacter
 
 	/** Capsule Collider Component - the player collision component */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character", meta = (AllowPrivateAccess = "true"))
-	UCapsuleComponent* GuardianCapsuleComponent;
+	TObjectPtr<UCapsuleComponent> GuardianCapsuleComponent;
 	
 	/** Skeletal Mesh Component - the animated SkeletalMesh asset */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh", meta = (AllowPrivateAccess = "true"))
-	USkeletalMeshComponent* GuardianMeshComponent;
+	TObjectPtr<USkeletalMeshComponent> GuardianMeshComponent;
 	
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
-	USpringArmComponent* CameraBoom;
+	TObjectPtr<USpringArmComponent> CameraBoom;
 
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
-	UCameraComponent* FollowCamera;
+	TObjectPtr<UCameraComponent> FollowCamera;
 
 	/** Sphere Collision (Pick-up Radius) */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
-	USphereComponent* PickupRadiusSphere;
+	TObjectPtr<USphereComponent> PickupRadiusSphere;
 
 	/** Custom Guardian Controller (handles Input) */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Controller", meta = (AllowPrivateAccess = "true"))
@@ -87,11 +86,11 @@ class CRESCENTREMNANTS_API AGuardianCharacter : public ACharacter
 
 	/** Guardian RunSpeed */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input", meta = (AllowPrivateAccess = "true"))
-	float GuardianRunSpeed = 1000.0f;
+	float GuardianRunSpeed = 800.0f;
 	
 	/** Guardian JumpStrength */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input", meta = (AllowPrivateAccess = "true"))
-	float GuardianJumpStrength = 10000.0f;
+	float GuardianJumpStrength = 500.0f;
 	
 	/**  The radius in which the player can interact/pick up items */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction", meta = (AllowPrivateAccess = "true"))
@@ -123,7 +122,6 @@ public:
 	AGuardianCharacter();
 
 	void DebugDraw() const;
-	void DebugGroundCheck() const;
 
 	// Player Input Action functions - functions called when the player does any kind of input on the controller:
 	
@@ -141,7 +139,6 @@ public:
 	void GuardianJump(const FInputActionValue& Value);
 	void GuardianStopJumping(const FInputActionValue& Value);
 	virtual void Landed(const FHitResult& Hit) override;
-	bool CanDoubleJump() const;
 	
 	/** Called for camera input */
 	UFUNCTION(BlueprintCallable, Category = "Character")
@@ -160,13 +157,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Character")
 	void CheckForNearbyPickups();
 
-	UFUNCTION(BlueprintCallable, Category = "Interaction")
-	void PickupAnItem(AInteractableItem* Item);
-
-	// Blueprint event that can be overridden to define custom behaviour
-	UFUNCTION(BlueprintImplementableEvent, Category = "Interaction")
-	void OnInteract(bool bWasLongInteract);
-
 	/** Called for GuardianInteract input */
 	void StartInteract(const FInputActionValue& Value);
 
@@ -175,7 +165,6 @@ public:
 
 	bool IsOnGround() const;
 	FVector GetFloorNormal() const;
-	void GuardianWallSlide();
 
 protected:
 
@@ -204,13 +193,15 @@ public:
 	bool GetIsClimbing() const { return bIsClimbing; }
 
 	/** Returns Capsule Collider subObject **/
-	FORCEINLINE class UCapsuleComponent* GetGuardianCapsuleComponent() const { return GuardianCapsuleComponent; }
+	FORCEINLINE TObjectPtr<UCapsuleComponent> GetGuardianCapsuleComponent() const { return GuardianCapsuleComponent; }
 	/** Returns SkeletalMesh subObject **/
-	FORCEINLINE class USkeletalMeshComponent* GetGuardianMesh() const { return GuardianMeshComponent; }
+	FORCEINLINE TObjectPtr<USkeletalMeshComponent> GetGuardianMesh() const { return GuardianMeshComponent; }
 	/** Returns CameraBoom subObject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	FORCEINLINE TObjectPtr<USpringArmComponent> GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subObject **/
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	FORCEINLINE TObjectPtr<UCameraComponent> GetFollowCamera() const { return FollowCamera; }
+	/** Returns PickupSphere subObject **/
+	FORCEINLINE TObjectPtr<USphereComponent> GetPickupSphereComponent() const { return PickupRadiusSphere; }
 	
 };
 
