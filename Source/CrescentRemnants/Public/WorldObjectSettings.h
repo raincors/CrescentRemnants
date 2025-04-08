@@ -53,6 +53,10 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Settings")
 	bool bIsHazard = false;
 
+	// Is this activated? Pickup floating, Checkpoint active, or platform moving, or hazard active etc...
+	UPROPERTY(EditAnywhere, Category = "Settings")
+	bool bIsActivated = false;
+
 	
 	// 🐛 Debug Settings
 	
@@ -207,9 +211,6 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category = "Interactable", meta = ( EditCondition = "bIsInteractable", EditConditionHides))
 	bool bDestroyOnInteract = false;
-	
-	UPROPERTY(EditAnywhere, Category = "Interactable", meta = ( EditCondition = "bIsInteractable", EditConditionHides) )
-	bool bIsActivated = false;
 
 
 	// 🎮 Platform Settings

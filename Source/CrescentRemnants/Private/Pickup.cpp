@@ -272,10 +272,14 @@ void APickup::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// Needs to be enabled for floating, and to be activated (double-check).
-	if (bEnableFloating && bIsActivated)
+	// Floating needs to be enabled
+	if (bEnableFloating)
 	{
-		Float();
+		// And the object needs to be activated, or not an interactable
+		if (bIsActivated || !bIsInteractable)
+		{
+			Float();
+		}
 	}
 }
 
