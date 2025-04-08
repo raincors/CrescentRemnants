@@ -85,9 +85,11 @@ protected:
 	virtual void BeginPlay() override;
 	
 	virtual void Tick(float DeltaTime) override;
-	
+
+#if WITH_EDITOR
 	// Runs in the Editor only, when you modify a property on an object
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
 
 	// For subclasses - when player starts overlapping with the object collision
 	UFUNCTION()

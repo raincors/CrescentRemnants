@@ -74,8 +74,10 @@ protected:
 	// Not really used, but for derived objects to be able to use it.
 	virtual void Tick(float DeltaTime) override;
 
+#if WITH_EDITOR
 	// Run the right variables in here to be able to change stuff directly in Editor and see the dynamic changes
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
 
 	// Runs when OnBeginOverlap() detects ACharacter
 	virtual void PlayerEntersInteractable() override;

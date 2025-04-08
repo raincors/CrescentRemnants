@@ -145,12 +145,13 @@ void AWorldObject::Tick(float DeltaTime)
 #if WITH_EDITOR
 
 // Called when an object has a field, variable or component modified in the Editor
-void AWorldObject::PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent)
+void AWorldObject::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 }
 
 #endif
+
 
 /** Our custom OnBeginOverlap is utilizing a built-in delegate from UPrimitiveComponent "->OnComponentBeginOverlap",
  * requires 6 parameters, but we only really use AActor* OtherActor.

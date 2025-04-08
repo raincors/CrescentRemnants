@@ -172,8 +172,10 @@ protected:
 	// Runs 60 times a second
 	virtual void Tick(float DeltaTime) override;
 
+#if WITH_EDITOR
 	// Only runs in Editor, used to update objects when you update variables
 	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
 
 	// For inherited classes to override.
 	virtual void PlayerEntersInteractable();
@@ -187,9 +189,6 @@ protected:
 	 * 
 	 * Virtual getters for classes to override, and replace the returns with their own instanced variables, components etc.
 	 */
-
-	// DataAssetPath for your specific AssetSettings
-	virtual FString GetDefaultSettingAssetPath() const override { return TEXT("/Game/Settings/Pickup_Default.Pickup_Default"); }
 	
 	// UStaticMesh - If you have a different StaticMesh in AssetSettings
 	virtual TSoftObjectPtr<UStaticMesh> GetObjectStaticMesh() const { return ObjectMesh; }
