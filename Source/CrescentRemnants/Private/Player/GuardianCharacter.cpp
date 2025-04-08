@@ -181,6 +181,8 @@ void AGuardianCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	CurrentRespawnLocation = GetActorLocation();
+
 	UE_LOG(LogTemp, Warning, TEXT("Guardian Mesh Collision: %s"), 
 	*UEnum::GetValueAsString(GuardianCapsuleComponent->GetCollisionEnabled()));
 
