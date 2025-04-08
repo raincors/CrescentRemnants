@@ -123,6 +123,8 @@ public:
 
 	void DebugDraw() const;
 
+	FVector CurrentRespawnLocation = FVector(0,0,0);  // Updated when player is in contact with a Checkpoint.
+
 	// Player Input Action functions - functions called when the player does any kind of input on the controller:
 	
 	/** Called for movement input */
@@ -148,11 +150,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Character")
 	void GuardianInteract();
 
+	/** Called for when player dies */
+	UFUNCTION(BlueprintCallable, Category = "Character")
+	void GuardianDeath(AActor* OtherActor);
+
 	/** Called for escape input (pause screen, skip etc.) */
 	UFUNCTION(BlueprintCallable, Category = "Character")
 	void GuardianEscape(const FInputActionValue& InputActionValue);
 
 	/** Internal character functions below (not directly connected to input from the controller): */
+
+	// Derived from AActor, whenever the player overlaps with an actor
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 	
 	UFUNCTION(BlueprintCallable, Category = "Character")
 	void CheckForNearbyPickups();

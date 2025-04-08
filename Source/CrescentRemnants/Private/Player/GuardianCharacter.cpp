@@ -8,9 +8,9 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/SphereComponent.h"
 #include "InputActionValue.h"
-#include "InteractableItem.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GenericPlatform/GenericPlatformMath.h"
+#include "Player/PlayerCheckpoint.h"
 
 /**
 	* Overview and Execution Order of the code:
@@ -365,10 +365,32 @@ void AGuardianCharacter::GuardianInteract()
 	} */
 }
 
+void AGuardianCharacter::GuardianDeath(AActor* OtherActor)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Guardian died in contact with %s!"), *OtherActor->GetName());
+
+	SetActorLocation(CurrentRespawnLocation);
+}
+
 void AGuardianCharacter::GuardianEscape(const FInputActionValue& InputActionValue)
 {
 	// TODO: Add pause screen functionality. Bound to "Esc" key on the keyboard and "Start" on controller.
 	
+}
+
+void AGuardianCharacter::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	Super::NotifyActorBeginOverlap(OtherActor);
+
+	if (OtherActor && Cast<APlayerCheckpoint>(OtherActor))
+	{
+		CurrentRespawnLocation = OtherActor->GetActorLocation();
+		UE_LOG(LogTemp, Warning, TEXT("Guardian respawn location is: %s!"), *CurrentRespawnLocation.ToString());
+	}
+	else if (OtherActor && Cast<ACharacter>(OtherActor))
+	{
+		GuardianDeath(OtherActor);
+	}
 }
 
 void AGuardianCharacter::CheckForNearbyPickups()
@@ -384,6 +406,7 @@ void AGuardianCharacter::CheckForNearbyPickups()
 		}
 	}
 }
+
 
 // TODO: Overall remove the extra tap / hold functionality for Interact? ...but I do like the timer. -benjamin
 // For hold interactions:
