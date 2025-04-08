@@ -443,11 +443,11 @@ void APickup::PlayerEntersInteractable()
 	{
 		FString objectName = this->GetName();
 		check(GEngine != nullptr);
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, DebugColour,TEXT("...player enters my InteractableZone. " + objectName));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, DebugColour,TEXT("...player enters my InteractableZone. " + objectName));
 	}
 	
 	// Toggle the light, if enabled on the object
-	if (SettingsAsset->bInteractionTogglesLight)
+	if (SettingsAsset && SettingsAsset->bInteractionTogglesLight)
 	{
 		bIsLightOn = !bIsLightOn;
 	}

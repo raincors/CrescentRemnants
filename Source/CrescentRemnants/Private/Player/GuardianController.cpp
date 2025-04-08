@@ -102,12 +102,12 @@ void AGuardianController::SetupInputComponent()
 	}
 }
 
-void AGuardianController::OnPossess(APawn* InPawn)
+void AGuardianController::OnPossess(APawn* aPawn)
 {
-	Super::OnPossess(InPawn);
+	Super::OnPossess(aPawn);
 
 	// 6. Get the controlled GuardianCharacter - Ensure we bind all this to the right pawn.
-	if (AGuardianCharacter* GuardianCharacter = Cast<AGuardianCharacter>(InPawn))
+	if (AGuardianCharacter* GuardianCharacter = Cast<AGuardianCharacter>(aPawn))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("💂 GuardianController now possesses: %s"), *GuardianCharacter->GetName());
 

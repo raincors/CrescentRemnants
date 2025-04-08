@@ -386,7 +386,7 @@ void AGuardianCharacter::NotifyActorBeginOverlap(AActor* OtherActor)
 
 	if (OtherActor && Cast<APlayerCheckpoint>(OtherActor))
 	{
-		CurrentRespawnLocation = OtherActor->GetActorLocation();
+		CurrentRespawnLocation = OtherActor->GetActorLocation() + FVector(0, 0, 20);
 		UE_LOG(LogTemp, Warning, TEXT("Guardian respawn location is: %s!"), *CurrentRespawnLocation.ToString());
 	}
 	else if (OtherActor && Cast<ACharacter>(OtherActor))
