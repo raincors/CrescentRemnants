@@ -29,6 +29,8 @@ AGuardianCharacter::AGuardianCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	CurrentRespawnLocation = GetActorLocation();
 	
 	// Setting up our collision capsule from CharacterMovementComponent, and making it the rootComponent
 	GuardianCapsuleComponent = GetCapsuleComponent();
