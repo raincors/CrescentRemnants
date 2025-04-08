@@ -1,56 +1,28 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "CrescentRemnantsGameMode.h"
-
-#include "RemnantHUD.h"
 #include "Player/GuardianCharacter.h"
 #include "Player/GuardianController.h"
+#include "RemnantHUD.h"
 
 ACrescentRemnantsGameMode::ACrescentRemnantsGameMode()
 {
-    // Set the default pawn class to my pure C++ character Guardian
-		// DefaultPawnClass = AGuardianCharacter::StaticClass();
+	// Load the GuardianCharacter Blueprint - keep in mind of the extra _C at the end (use the generated class)! 
+	static ConstructorHelpers::FClassFinder<AGuardianCharacter> CharBPClass(TEXT("/Game/Blueprints/BP_GuardianCharacter.BP_GuardianCharacter_C"));
+	if (CharBPClass.Succeeded())
+	{
+		GuardianCharacterClass = CharBPClass.Class;
+		DefaultPawnClass = GuardianCharacterClass;
+	}
 
-	// Set the default HUD class to be our HUD class:
-	// HUDClass = AGuardianHUDClass::StaticClass();
-    // HUDClass = ARemnantHUD::StaticClass();
-	// Set the default controller class to my own C++ controller for the enhanced input system
+	// Load the custom GuardianController (C++)
 	PlayerControllerClass = AGuardianController::StaticClass();
 
-	// Set the default Game State class to be:
-	// GameStateClass = AGameStateClassHere::StaticClass();
-	
-	// In order to use a Blueprint class, I'd have to load it like this inside this constructor:
-    	
-    // Finding and locating the exact blueprint (be precise with syntax around the file path)
-    static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/Blueprints/BP_GuardianCharacter"));
-    	
-    if (PlayerPawnBPClass.Succeeded())
-    {
-    	DefaultPawnClass = PlayerPawnBPClass.Class;
-    }
-	else
+	// Load the custom HUD Blueprint -  - keep in mind of the extra _C at the end (use the generated class)! 
+	static ConstructorHelpers::FClassFinder<ARemnantHUD> HUDBPClass(TEXT("/Game/Blueprints/HUD/BP_HUD.BP_HUD_C"));
+	if (HUDBPClass.Succeeded())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Couldn't find the blueprint playerClass! Using default C++ class."))
+		GuardianHUDClass = HUDBPClass.Class;
+		HUDClass = GuardianHUDClass;
 	}
-
-	static ConstructorHelpers::FClassFinder<AHUD> PlayerHUDBPClass(TEXT("/Game/Blueprints/HUD/BP_HUD"));
-    	
-	if (PlayerHUDBPClass.Succeeded())
-	{
-		HUDClass = PlayerHUDBPClass.Class;
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Couldn't find the blueprint BP_HUD! Using default C++ class."))
-	}
-    
-}
-void ACrescentRemnantsGameMode::StartPlay()
-{
-	Super::StartPlay();
-
-	// Just for testing purposes, and to see how to debug to the screen - 
-	check(GEngine != nullptr);
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, TEXT("Hello World, this is from CrescentRemnantsGameMode.cpp!"));
 }

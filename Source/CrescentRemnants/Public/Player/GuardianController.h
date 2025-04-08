@@ -16,9 +16,11 @@ class CRESCENTREMNANTS_API AGuardianController : public APlayerController
 	/** InputMappingContext (IMC) for the Guardian */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* IMC_Guardian;
-
+	
 	virtual void SetupInputComponent() override;
+	
 	virtual void OnPossess(APawn* InPawn) override;
+	
 	void BindInputs(AGuardianCharacter* GuardianCharacter, UEnhancedInputComponent* EnhancedInputComponent);
 
 protected:
