@@ -127,7 +127,7 @@ AGuardianCharacter::AGuardianCharacter()
 
 		// Jumping
 		GetCharacterMovement()->JumpZVelocity = GuardianJumpStrength; // Jumping speed
-		GetCharacterMovement()->AirControl = 0.8f; // Control mid-air
+		GetCharacterMovement()->AirControl = 0.5f; // Control mid-air
 		JumpMaxCount = 2;
 	}
     
@@ -388,7 +388,7 @@ void AGuardianCharacter::NotifyActorBeginOverlap(AActor* OtherActor)
 
 	if (OtherActor && Cast<APlayerCheckpoint>(OtherActor))
 	{
-		CurrentRespawnLocation = OtherActor->GetActorLocation() + FVector(0, 0, 20);
+		CurrentRespawnLocation = OtherActor->GetActorLocation() + FVector(0, 0, 50);
 		UE_LOG(LogTemp, Warning, TEXT("Guardian respawn location is: %s!"), *CurrentRespawnLocation.ToString());
 	}
 	else if (OtherActor && Cast<ACharacter>(OtherActor))
