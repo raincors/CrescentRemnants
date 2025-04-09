@@ -41,31 +41,31 @@ protected:
 	// --- Components: --- Note that they are named more generic in regard to usage in inherited classes.
 	
 	// StaticMeshComponent
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Component", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> ObjectMeshComp;
 	
 	// StaticMeshComponent - StaticMesh
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Component", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	TSoftObjectPtr<UStaticMesh> ObjectMesh;
 
 	// StaticMeshComponent - Material / MaterialInstance (via UMaterialInterface)
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Component", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	TSoftObjectPtr<UMaterialInterface> ObjectMaterial;
 
 	// CapsuleComponent (for overlapping with ACharacter)
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Component", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UCapsuleComponent> ObjectCapsuleComp;
 
 	// PointLightComponent
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Component", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UPointLightComponent> ObjectPointLightComp;
 
 	// AudioComponent
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Component", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UAudioComponent> ObjectAudioComp;
 
 	// AudioComponent - USoundBase (sound to play)
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Component", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	TSoftObjectPtr<USoundBase> ObjectSound;
 
 	/** --- Properties / Variables ---
@@ -77,81 +77,73 @@ protected:
 	 * - Float Settings
 	 * - Debug Settings
 	 */
+	
+	// Bool - bIsPickup? Default = true for APickup, but can be overridden by subclasses.
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Settings", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
+	bool bIsPickup = false;
 
 	// Bool - bIsInteractable? Default = false for APickup, but can be overridden by subclasses.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Settings", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Settings", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
 	bool bIsInteractable = false;
 
-	// Bool - Destroy actor when picked up? - Default = true for APickup, but can be overridden by subclasses.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Settings", meta = (AllowPrivateAccess = "true"))
-	bool bDestroyOnPickup = false;
-
 	// Does the object float?
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Settings", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Override|Settings", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
 	bool bEnableFloating = true;
 	
 	// ObjectMesh - Rotation
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Mesh", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Override|Mesh", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
 	FRotator ObjectMeshRotation = FRotator(0.f, 0.f, 0.f);
 	
 	// ObjectMesh - Scale
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Mesh", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Override|Mesh", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
 	FVector ObjectMeshScale = FVector(0.5f, 0.5f, 0.5f);
 
 	// CapsuleComponent
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Capsule", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Override|Capsule", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
 	FVector CapsuleLocation = FVector(0.f, 0.f, 0.f);
 
 	// CapsuleComponent
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Capsule", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
-	FRotator CapsuleRotation = FRotator(0.f, 0.f, 0.f);
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Override|Capsule", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
+	float CapsuleRadius = 75.f;
 
 	// CapsuleComponent
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Capsule", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
-	FVector CapsuleScale = FVector(0.5f, 0.5f, 0.5f);
-
-	// CapsuleComponent
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Capsule", meta = (AllowPrivateAccess = "true"), meta=(Tooltip="The radius of the capsule. Should be equal or less than half-height."), meta = (EditCondition = "bAllowSettingsOverride"))
-	float CapsuleRadius = 80.f;
-
-	// CapsuleComponent
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Capsule", meta = (AllowPrivateAccess = "true"), meta=(Tooltip="The half-height of the capsule. Should be equal or greater than the radius."), meta = (EditCondition = "bAllowSettingsOverride"))
-	float CapsuleHalfHeight = 80.f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Override|Capsule", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
+	float CapsuleHalfHeight = 75.f;
 
 	// PointLightComponent Location
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Light", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
-	FVector ObjectLightLocation = FVector(0.f, 0.f, -50.f);
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Light", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
+	FVector ObjectLightLocation = FVector(0.f, 0.f, -30.f);
 
 	// PointLightComponent
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Light", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Light", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
 	FColor LightColour = FColor::White;
 
 	// PointLightComponent
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Light", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Light", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
 	float LightIntensity = 400.f;
 
 	// PointLightComponent
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Light", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
-	float LightAttenuationRadius = 100.f;
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Light", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
+	float LightAttenuationRadius = 300.f;
 
 	// PointLightComponent
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Light", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Light", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
 	float LightSourceRadius = 100.f;
 
 	// PointLightComponent
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Light", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Light", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
 	bool bIsLightOn = true;
 
 	// FloatingHeight default at 0. 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Visuals", meta = (EditCondition = "bEnableFloating", EditConditionHides))
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Float", meta = (EditCondition = "bAllowSettingsOverride"))
 	float FloatingDistance = 0.f;
 
 	// FloatingSpeed default at 0.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Visuals", meta = (EditCondition = "bEnableFloating", EditConditionHides))
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Float", meta = (EditCondition = "bAllowSettingsOverride"))
 	float FloatingSpeed = 0.f;
 
 	// Debug - Is the capsule collider going to be visible in-game?
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Debug", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bDebugEnabled"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Override|Debug", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bDebugEnabled"))
 	bool bDebugCapsuleVisibility = false;
 	
 public:

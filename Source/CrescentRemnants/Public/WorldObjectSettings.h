@@ -33,6 +33,10 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Settings")
 	bool bApplyDefaultAssetSettings = true;
 
+	// Is this a pickup? (Pickups only)
+	UPROPERTY(EditAnywhere, Category = "Settings")
+	bool bIsPickup = false;
+
 	// Is this an Interactable? (InteractableItem, or Checkpoint!)
 	UPROPERTY(EditAnywhere, Category = "Settings")
 	bool bIsInteractable = false;
@@ -108,9 +112,6 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category = "Collision|Box", meta = (EditCondition = "bHasBoxCollision", EditConditionHides))
 	FRotator DefaultBoxRotation = FRotator(0.f, 0.f, 0.f);
-	
-	UPROPERTY(EditAnywhere, Category = "Collision|Box", meta = (EditCondition = "bHasBoxCollision", EditConditionHides))
-	FVector DefaultBoxScale = FVector(0.5f, 0.5f, 0.5f);
 
 	UPROPERTY(EditAnywhere, Category = "Collision|Box", meta = (EditCondition = "bHasBoxCollision", EditConditionHides))
 	FVector DefaultBoxExtents = FVector(60.f, 60.f, 60.f);
@@ -126,12 +127,6 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category = "Collision|Sphere", meta = (EditCondition = "bHasSphereCollision", EditConditionHides))
 	FVector DefaultSphereLocation = FVector(0.f, 0.f, 0.f);
-	
-	UPROPERTY(EditAnywhere, Category = "Collision|Sphere", meta = (EditCondition = "bHasSphereCollision", EditConditionHides))
-	FRotator DefaultSphereRotation = FRotator(0.f, 0.f, 0.f);
-	
-	UPROPERTY(EditAnywhere, Category = "Collision|Sphere", meta = (EditCondition = "bHasSphereCollision", EditConditionHides))
-	FVector DefaultSphereScale = FVector(0.5f, 0.5f, 0.5f);
 
 	UPROPERTY(EditAnywhere, Category = "Collision|Sphere", meta = (EditCondition = "bHasSphereCollision", EditConditionHides))
 	float DefaultSphereRadius = 200.f;
@@ -150,9 +145,6 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category = "Collision|Capsule", meta = (EditCondition = "bHasCapsuleCollision", EditConditionHides))
 	FRotator DefaultCapsuleRotation = FRotator(0.f, 0.f, 0.f);
-	
-	UPROPERTY(EditAnywhere, Category = "Collision|Capsule", meta = (EditCondition = "bHasCapsuleCollision", EditConditionHides))
-	FVector DefaultCapsuleScale = FVector(0.5f, 0.5f, 0.5f);
 
 	UPROPERTY(EditAnywhere, Category = "Collision|Capsule", meta = (EditCondition = "bHasCapsuleCollision", EditConditionHides))
 	float DefaultCapsuleHalfHeight = 60.f;

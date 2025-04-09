@@ -21,10 +21,18 @@ APlayerCheckpoint::APlayerCheckpoint()
 
 bool APlayerCheckpoint::UseWorldObjectAssetSettings()
 {
-	if (!Super::UseWorldObjectAssetSettings())
+	if (Super::UseWorldObjectAssetSettings())
+	{
+		Super::UseWorldObjectAssetSettings();
+	}
+	else
 	{
 		return false;
 	}
+
+	bIsPickup = SettingsAsset->bIsPickup;
+	bIsInteractable = SettingsAsset->bIsInteractable;
+	bIsActivated = SettingsAsset->bIsActivated;
 	
 	if (ObjectCapsuleComp)
 	{

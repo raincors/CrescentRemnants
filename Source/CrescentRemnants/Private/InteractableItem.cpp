@@ -16,8 +16,8 @@
 AInteractableItem::AInteractableItem()
 {
 	// Set this actor to call Tick() every frame. Set to false as default in WorldObject.
-	PrimaryActorTick.bCanEverTick = true;
-
+	PrimaryActorTick.bCanEverTick = false;
+	
 	bOneTimeUseOnly = false;
 
 	// Changing the inherited CapsuleCompSize to be the default Interactable settings
@@ -38,12 +38,18 @@ AInteractableItem::AInteractableItem()
 
 bool AInteractableItem::UseWorldObjectAssetSettings()
 {
-	if (!Super::UseWorldObjectAssetSettings())
+	if (Super::UseWorldObjectAssetSettings())
+	{
+		Super::UseWorldObjectAssetSettings();
+	}
+	else
 	{
 		return false;
 	}
-
+	
 	// Different flags, interaction-based.
+	bIsPickup = SettingsAsset->bIsPickup;
+	bIsInteractable = SettingsAsset->bIsInteractable;
 	bDestroyOnInteract = SettingsAsset->bDestroyOnInteract;
 	bInteractionTogglesLight = SettingsAsset->bInteractionTogglesLight;
 	bIsActivated = SettingsAsset->bIsActivated;

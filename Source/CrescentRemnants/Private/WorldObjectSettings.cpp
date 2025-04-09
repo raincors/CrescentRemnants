@@ -10,7 +10,7 @@ void UWorldObjectSettings::ApplySettingsToAllObjects()
 {
     for (TObjectIterator<AWorldObject> It; It; ++It)
     {
-        if (It->SettingsAsset == this)
+        if (It->SettingsAsset.IsValid() && It->SettingsAsset == this)
         {
             It->UseWorldObjectAssetSettings();
 #if WITH_EDITOR

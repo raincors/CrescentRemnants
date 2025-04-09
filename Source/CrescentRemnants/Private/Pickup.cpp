@@ -2,12 +2,10 @@
 
 
 #include "Pickup.h"
-
 #include "WorldObjectSettings.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/PointLightComponent.h"
 #include "Components/AudioComponent.h"
-#include "Engine/CoreSettings.h"
 #include "GameFramework/Character.h"
 
 /** Worth knowing is that any class deriving off of AWorldObject, runs its constructor to initialize components and apply
@@ -95,8 +93,6 @@ APickup::APickup()
 
 	// Setting constructor defaults for the overlap capsule, to adjust it according to the object
 	ObjectCapsuleComp->SetRelativeLocation(CapsuleLocation);
-	ObjectCapsuleComp->SetRelativeRotation(CapsuleRotation);
-	ObjectCapsuleComp->SetRelativeScale3D(CapsuleScale);
 	ObjectCapsuleComp->SetHiddenInGame(bDebugCapsuleVisibility);
 
 	// Enabling overlap events, and making sure they only overlap with dynamic objects (ideally just the player)
@@ -169,6 +165,7 @@ bool APickup::UseWorldObjectAssetSettings()
 	}
 	
 	// Setting bools.
+	bIsPickup = SettingsAsset->bIsPickup;
 	bIsInteractable = SettingsAsset->bIsInteractable;
 	
 	// Setting debug settings:
@@ -302,7 +299,7 @@ void APickup::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent
 		if (ObjectCapsuleComp && bDebugCapsuleVisibility)
 		{
 			DrawDebugCapsule(GetWorld(), GetActorLocation(), CapsuleHalfHeight, CapsuleRadius,
-		CapsuleRotation.Quaternion(), FColor::Red, false, -1, 0, 1.f);
+		ObjectCapsuleComp.Get()->GetComponentRotation().Quaternion(), FColor::Red, false, -1, 0, 1.f);
 		}
 	}
 
@@ -366,8 +363,6 @@ void APickup::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent
 	if (ChangedProperty == GET_MEMBER_NAME_CHECKED(APickup, CapsuleRadius) ||
 		ChangedProperty == GET_MEMBER_NAME_CHECKED(APickup, CapsuleHalfHeight) ||
 		ChangedProperty == GET_MEMBER_NAME_CHECKED(APickup, CapsuleLocation) ||
-		ChangedProperty == GET_MEMBER_NAME_CHECKED(APickup, CapsuleRotation) ||
-		ChangedProperty == GET_MEMBER_NAME_CHECKED(APickup, CapsuleScale) ||
 		ChangedProperty == GET_MEMBER_NAME_CHECKED(APickup, bDebugCapsuleVisibility))
 	{
 		// Check if Capsule Comp not nullptr
@@ -388,8 +383,6 @@ void APickup::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent
 			ObjectCapsuleComp->SetCapsuleSize(CapsuleRadius, CapsuleHalfHeight);
 		
 			ObjectCapsuleComp->SetRelativeLocation(FVector(CapsuleLocation));
-			ObjectCapsuleComp->SetRelativeRotation(FRotator(CapsuleRotation));
-			ObjectCapsuleComp->SetRelativeScale3D(FVector(CapsuleScale));
 
 			// If you don't want to see the capsule in Playmode.
 			ObjectCapsuleComp->SetHiddenInGame(bDebugCapsuleVisibility);
@@ -433,10 +426,10 @@ void APickup::PickupItem()
 		check(GEngine != nullptr);
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, DebugColour,TEXT("I'm being picked up! ... remember me as " + objectName));
 	}
-	if (bDestroyOnPickup || SettingsAsset->bOneTimeUse)
+	/*if (bDestroyOnPickup || SettingsAsset->bOneTimeUse)
 	{
 		Destroy();
-	}
+	}*/
 }
 
 // A default function for interactableItem and Checkpoint to use, APickup should run PickupItem() instead.
@@ -447,7 +440,7 @@ void APickup::PlayerEntersInteractable()
 	{
 		FString objectName = this->GetName();
 		check(GEngine != nullptr);
-		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, DebugColour,TEXT("...player enters my InteractableZone. " + objectName));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, DebugColour, TEXT("...player enters my InteractableZone. " + objectName));
 	}
 	
 	// Toggle the light, if enabled on the object
