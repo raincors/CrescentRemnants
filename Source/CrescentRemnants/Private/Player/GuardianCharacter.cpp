@@ -127,8 +127,8 @@ AGuardianCharacter::AGuardianCharacter()
 
 		// Jumping
 		GetCharacterMovement()->JumpZVelocity = GuardianJumpStrength; // Jumping speed
-		GetCharacterMovement()->AirControl = 0.2f; // Control mid-air
-		JumpMaxCount = 3;
+		GetCharacterMovement()->AirControl = 0.8f; // Control mid-air
+		JumpMaxCount = 2;
 	}
     
 	// Disable physics simulation on the capsule and mesh, but still use CharacterMovement
