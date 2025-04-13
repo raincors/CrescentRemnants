@@ -16,7 +16,8 @@ class USphereComponent;
 class UInputMappingContext;
 class UInputAction;
 class UCharacterMovementComponent;
-
+class APickup;
+class UTextBubble;
 class AGuardianController;
 
 struct FInputActionValue;
@@ -111,6 +112,27 @@ class CRESCENTREMNANTS_API AGuardianCharacter : public ACharacter
 	/** Is the Guardian climbing? */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character", meta = (AllowPrivateAccess = "true"))
 	bool bIsClimbing = false; // Tracks if the Guardian is climbing.
+
+	//Remnants pick-up variables:
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Remnants", meta = (AllowPrivateAccess = "true"))
+	float RemnantsProgress = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Remnants", meta = (AllowPrivateAccess = "true"))
+	int Memory = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Remnants", meta = (AllowPrivateAccess = "true"))
+	float RemnantsCounter = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Remnants", meta = (AllowPrivateAccess = "true"))
+	float MaxRemnants = 3.0f;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UTextBubble> TextBubbleClass;
+
+	UPROPERTY()
+	UTextBubble* TextBubble;
+	// Remnant pick-ups variables ^^^
 	
 	FTimerHandle InteractHoldTimerHandle; // Timer Handle to help track hold duration with GuardianInteract
 	float StoredInteractHoldTime = 0.0f; // Stores how long the GuardianInteract button is held;
@@ -211,7 +233,15 @@ public:
 	FORCEINLINE TObjectPtr<UCameraComponent> GetFollowCamera() const { return FollowCamera; }
 	/** Returns PickupSphere subObject **/
 	FORCEINLINE TObjectPtr<USphereComponent> GetPickupSphereComponent() const { return PickupRadiusSphere; }
+
+	UFUNCTION(BlueprintCallable)
+	void RemnantCollect(APickup* Pickup);
 	
+	UFUNCTION(BlueprintCallable)
+	void MemoryUnlock();
+
+	UFUNCTION(BlueprintCallable)
+	void ResetRemnantProgress();
 };
 
 /** Functions and variables intended for jumping (deriving only what's necessary from ACharacter):

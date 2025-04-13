@@ -78,9 +78,6 @@ protected:
 	 * - Debug Settings
 	 */
 	
-	// Bool - bIsPickup? Default = true for APickup, but can be overridden by subclasses.
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Settings", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
-	bool bIsPickup = false;
 
 	// Bool - bIsInteractable? Default = false for APickup, but can be overridden by subclasses.
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Settings", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
@@ -149,6 +146,10 @@ protected:
 public:
 	// Constructors should be public in Unreal Engine. Otherwise, you will have troubles spawning your object.
 	APickup();
+
+	// Bool - bIsPickup? Default = true for APickup, but can be overridden by subclasses.
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Settings", meta = (EditCondition = "bAllowSettingsOverride"))
+	bool bIsPickup = false;
 
 protected:
 	
