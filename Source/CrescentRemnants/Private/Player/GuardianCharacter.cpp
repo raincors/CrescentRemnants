@@ -8,11 +8,13 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/SphereComponent.h"
 #include "InputActionValue.h"
+#include "SCurveEditor.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GenericPlatform/GenericPlatformMath.h"
 #include "Player/PlayerCheckpoint.h"
-#include "Perception/AIPerceptionStimuliSourceComponent.h"
-#include "Perception/AISense_Sight.h"
+#include "Pickup.h"
+#include "Blueprint/UserWidget.h"
+#include "TextBubble.h"
 
 /**
 	* Overview and Execution Order of the code:
@@ -137,9 +139,6 @@ AGuardianCharacter::AGuardianCharacter()
 	GuardianCapsuleComponent->SetSimulatePhysics(false);
 	GuardianMeshComponent->SetSimulatePhysics(false);
 
-	//Registers the player with the perception system, which allows enemies to spot them
-	SetupStimulusSource();
-
 	// Just to test and practice logging:
 	// Being mindful that floats have to be limited due too many decimal spaces: %.2f = 2 decimals, %.1f = 1 decimal.
 	// And strings need a * in front of them, otherwise no print for you.
@@ -251,6 +250,46 @@ void AGuardianCharacter::Tick(float DeltaTime)
 	}
 }
 
+void AGuardianCharacter::RemnantCollect(APickup* Pickup)
+{
+	if (Pickup == nullptr)
+		return;
+	if (RemnantsProgress<1.0)
+	{
+		if (Pickup->bIsPickup==true)
+		{
+			Pickup->Destroy();
+			RemnantsCounter++;
+			RemnantsProgress = RemnantsCounter/MaxRemnants;
+			GEngine->AddOnScreenDebugMessage(-1,15.0f,FColor::Magenta, FString::SanitizeFloat(RemnantsProgress));
+		}
+	}
+}
+
+void AGuardianCharacter::MemoryUnlock()
+{
+	if (RemnantsProgress>=1.0)
+	{
+		Memory++;
+		APlayerController* PC = Cast<APlayerController>(GetController());
+		if (PC && TextBubbleClass)
+		{
+			TextBubble=CreateWidget<UTextBubble>(PC, TextBubbleClass);
+			TextBubble->AddToViewport();
+		}
+
+	}
+}
+
+void AGuardianCharacter::ResetRemnantProgress()
+{
+	if (RemnantsProgress>=1.0)
+	{
+		RemnantsCounter = 0.0f;
+		RemnantsProgress = 0.0f;
+	}
+}
+
 bool AGuardianCharacter::IsOnGround() const
 {
 	FVector Start = GetActorLocation();
@@ -284,18 +323,6 @@ FVector AGuardianCharacter::GetFloorNormal() const
 		return HitResult.Normal; // Return surface normal
 	}
 	return FVector(0, 0, 1); // Default: Flat ground
-}
-
-void AGuardianCharacter::SetupStimulusSource()
-{
-	//Creates Stimulus Source for enemyAI
-	StimulusSource = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("Stimulus"));
-	if (StimulusSource)
-	{
-		//Registers the Stimulus Source with the perception system
-		StimulusSource->RegisterForSense(TSubclassOf<UAISense_Sight>());
-		StimulusSource->RegisterWithPerceptionSystem();
-	}
 }
 
 void AGuardianCharacter::GuardianMove(const FInputActionValue& Value)
@@ -492,3 +519,4 @@ void AGuardianCharacter::PerformLongInteract()
  *  C. Add Echolocation of items functionality - to help envision and see where key objects are in your vision.
  *  D. Clean up old unused code, or functionality that is not needed.
  */
+
