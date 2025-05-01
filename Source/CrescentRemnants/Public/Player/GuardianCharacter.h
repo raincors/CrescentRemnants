@@ -211,7 +211,12 @@ public:
 	FORCEINLINE TObjectPtr<UCameraComponent> GetFollowCamera() const { return FollowCamera; }
 	/** Returns PickupSphere subObject **/
 	FORCEINLINE TObjectPtr<USphereComponent> GetPickupSphereComponent() const { return PickupRadiusSphere; }
-	
+
+private:
+
+	//class and function for the enemyAI's perception system
+	class UAIPerceptionStimuliSourceComponent* StimulusSource;
+	void SetupStimulusSource();	
 };
 
 /** Functions and variables intended for jumping (deriving only what's necessary from ACharacter):
