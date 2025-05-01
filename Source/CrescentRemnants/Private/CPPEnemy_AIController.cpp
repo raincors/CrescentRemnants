@@ -34,7 +34,7 @@ void ACPPEnemy_AIController::SetupPerceptionSystem()
 	if (SightConfig)
 	{
 		SetPerceptionComponent(*CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("Perception Component")));
-		SightConfig->SightRadius = 1000.f;
+		SightConfig->SightRadius = 1000.0f;
 		SightConfig->LoseSightRadius = SightConfig->SightRadius + 25.f;
 		SightConfig->PeripheralVisionAngleDegrees = 180.0f;
 		SightConfig->SetMaxAge(5.f);
