@@ -22,13 +22,14 @@ public:
 
 	/**
 	* WARNING: This function may cause the editor to become unresponsive or crash if called while making
-	* other changes. Always save your work before pressing this button.
+	* other changes. Always save your work before pressing this button / running this function.
 	* 
 	* This function applies the current settings from this DataAsset to all WorldObjects in the level
 	* that reference it.
 	*/
 	UFUNCTION(CallInEditor, Category = "Settings")
 	void ApplySettingsToAllObjects();
+
 	
 	// 📝 Asset Settings
 	
@@ -48,28 +49,28 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Settings")
 	bool bIsInteractable = false;
 
-	// Is this object only used once? Like a pickup, or a checkpoint.
-	UPROPERTY(EditAnywhere, Category = "Settings")
-	bool bOneTimeUse = false;
-
-	// Is this object floating? (Pickups, or even checkpoints and Platforms!)
-	UPROPERTY(EditAnywhere, Category = "Settings")
-	bool bEnableFloating = false;
-
 	// Is this a platform?
 	UPROPERTY(EditAnywhere, Category = "Settings")
 	bool bIsPlatform = false;
 
-	// Is this a hazard?
+	// Is this a hazard? (Unused)
 	UPROPERTY(EditAnywhere, Category = "Settings")
 	bool bIsHazard = false;
 
-	// Is this activated? Pickup floating, Checkpoint active, or platform moving, or hazard active etc...
+	// Is this object only used once? Like a pickup, or a checkpoint.
 	UPROPERTY(EditAnywhere, Category = "Settings")
-	bool bIsActivated = false;
+	bool bOneTimeUse = false;
+
+	// Is this object floating? Pickups, platforms, etc.
+	UPROPERTY(EditAnywhere, Category = "Settings")
+	bool bEnableFloating = false;
+
+	// Is this activated from the start? Pickup floating, Checkpoint active, or platform moving, or hazard active etc...
+	UPROPERTY(EditAnywhere, Category = "Settings")
+	bool bIsActivated = true;
 
 	
-	// 🐛 Debug Settings
+	// 🐛 Debug Settings (Note that some debug settings are located inside other settings, due to dependencies)
 	
 	// Do we enable debugging on the object?
 	UPROPERTY(EditAnywhere, Category = "Debug")
@@ -112,7 +113,7 @@ public:
 	bool bHasBoxCollision = false;
 
 	UPROPERTY(EditAnywhere, Category = "Collision|Box", meta = (EditCondition = "bHasBoxCollision && bEnableDebug"))
-	bool bDebugIsBoxCollisionVisible = true;
+	bool bDebugIsBoxCollisionVisible = false;
 
 	UPROPERTY(EditAnywhere, Category = "Collision|Box", meta = (EditCondition = "bHasBoxCollision", EditConditionHides))
 	FVector DefaultBoxLocation = FVector(0.f, 0.f, 0.f);
@@ -130,13 +131,13 @@ public:
 	bool bHasSphereCollision = false;
 
 	UPROPERTY(EditAnywhere, Category = "Collision|Sphere", meta = (EditCondition = "bHasSphereCollision && bEnableDebug"))
-	bool bDebugIsSphereCollisionVisible = true;
+	bool bDebugIsSphereCollisionVisible = false;
 	
 	UPROPERTY(EditAnywhere, Category = "Collision|Sphere", meta = (EditCondition = "bHasSphereCollision", EditConditionHides))
 	FVector DefaultSphereLocation = FVector(0.f, 0.f, 0.f);
 
 	UPROPERTY(EditAnywhere, Category = "Collision|Sphere", meta = (EditCondition = "bHasSphereCollision", EditConditionHides))
-	float DefaultSphereRadius = 200.f;
+	float DefaultSphereRadius = 60.f;
 
 	
 	// 💊 Capsule Collision Overlap Settings
@@ -160,14 +161,13 @@ public:
 	float DefaultCapsuleRadius = 60.f;;
 
 	
-	// 🛟 Float Settings (For pickups (and maybe hazards))
-	
+	// 🛟 Float Settings (For pickups, platforms, (and maybe hazards))
 	
 	UPROPERTY(EditAnywhere, Category = "Movement", meta = (EditCondition = "bEnableFloating", EditConditionHides))
 	float DefaultFloatingDistance = 10.f;
 
 	UPROPERTY(EditAnywhere, Category = "Movement", meta = (EditCondition = "bEnableFloating", EditConditionHides))
-	float DefaultFloatingSpeed = 1.5f;
+	float DefaultFloatingSpeed = 2.2f;
 
 	
 	// 💡 Light Settings (for pickups or platforms that glow)
@@ -176,7 +176,7 @@ public:
 	bool bHasLightComponent = false;
 
 	UPROPERTY(EditAnywhere, Category = "Light", meta = (EditCondition = "bHasLightComponent", EditConditionHides))
-	FVector DefaultLightLocation = FVector(0.f, 0.f, -30.f);
+	FVector DefaultLightLocation = FVector(0.f, 0.f, -40.f);
 
 	UPROPERTY(EditAnywhere, Category = "Light", meta = (EditCondition = "bHasLightComponent", EditConditionHides))
 	bool bIsLightOn = false;
@@ -185,28 +185,19 @@ public:
 	float DefaultLightIntensity = 400.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Light", meta = (EditCondition = "bHasLightComponent", EditConditionHides))
-	float DefaultAttenuationRadius = 300.f;
+	float DefaultAttenuationRadius = 200.f;
 
 	UPROPERTY(EditAnywhere, Category = "Light", meta = (EditCondition = "bHasLightComponent", EditConditionHides))
-	float DefaultLightSourceRadius = 200.f;
+	float DefaultLightSourceRadius = 100.f;
 
 	UPROPERTY(EditAnywhere, Category = "Light", meta = (EditCondition = "bHasLightComponent", EditConditionHides))
 	FColor DefaultLightColour = FColor::White;
-
-	
-	// 🔉 Sound Settings
-	
-	UPROPERTY(EditAnywhere, Category = "Sound")
-	TSoftObjectPtr<USoundBase> DefaultSound = nullptr;
-
-	UPROPERTY(EditAnywhere, Category = "Sound")
-	bool bActivateOnSpawn = false;
 	
 
 	// 🧩 Interactable (for interactable objects and checkpoints)
 	
 	UPROPERTY(EditAnywhere, Category = "Interactable", meta = ( EditCondition = "bIsInteractable", EditConditionHides))
-	bool bInteractionTogglesLight = false;
+	bool bOverlapTogglesLight = true;
 	
 	UPROPERTY(EditAnywhere, Category = "Interactable", meta = ( EditCondition = "bIsInteractable", EditConditionHides))
 	bool bDestroyOnInteract = false;
@@ -218,13 +209,10 @@ public:
 	bool bIsBreakable = false;
 
 	UPROPERTY(EditAnywhere, Category = "Movement|Platform", meta = (EditCondition = "bIsPlatform", EditConditionHides))
-	float DefaultPlatformMoveSpeed = 150.f;
-
-	UPROPERTY(EditAnywhere, Category = "Movement|Platform", meta = (EditCondition = "bIsPlatform", EditConditionHides))
-	bool bMoveWhenPlayerOn = true;
+	bool bMoveOnlyWhenPlayerOn = true;
 
 	
-	// ⚠️ Hazard Settings (For obstacles)
+	// ⚠️ Hazard Settings (For obstacles) - UNUSED
 
 	UPROPERTY(EditAnywhere, Category = "Hazard", meta = (EditCondition = "bIsHazard", EditConditionHides))
 	bool isLethal = false;
