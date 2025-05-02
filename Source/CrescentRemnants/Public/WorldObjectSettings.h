@@ -155,6 +155,9 @@ public:
 	FRotator DefaultCapsuleRotation = FRotator(0.f, 0.f, 0.f);
 
 	UPROPERTY(EditAnywhere, Category = "Collision|Capsule", meta = (EditCondition = "bHasCapsuleCollision", EditConditionHides))
+	FVector DefaultCapsuleScale = FVector(1.f, 1.f, 1.f);
+
+	UPROPERTY(EditAnywhere, Category = "Collision|Capsule", meta = (EditCondition = "bHasCapsuleCollision", EditConditionHides))
 	float DefaultCapsuleHalfHeight = 60.f;
 	
 	UPROPERTY(EditAnywhere, Category = "Collision|Capsule", meta = (EditCondition = "bHasCapsuleCollision", EditConditionHides))
