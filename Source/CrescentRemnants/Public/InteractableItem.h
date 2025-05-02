@@ -18,7 +18,7 @@ class CRESCENTREMNANTS_API AInteractableItem : public APickup
 	GENERATED_BODY()
 
 	// A SphereComponent with a bigger radius to help run e.g. animations or visuals when the player is nearby.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Interactable", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Interactable", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USphereComponent> InteractableOverlapSphere;
 
 	/** --- Properties / Variables ---
@@ -29,15 +29,15 @@ class CRESCENTREMNANTS_API AInteractableItem : public APickup
 	 */
 
 	// Debug - Is the overlap sphere visible in PlayMode?
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Interactable", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Interactable", meta = (AllowPrivateAccess = "true"))
 	bool bDebugIsOverlapSphereVisible = false;
 	
 	// Object Bool - Toggle whether the object destroys itself on Interact (editable from the Details panel, thanks to EditAnywhere)
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Interactable", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Interactable", meta = (AllowPrivateAccess = "true"))
 	bool bDestroyOnInteract = false;
 	
 	// SphereComponent - Interaction SphereOverlapRadius (detects when a player is nearby)
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Interactable", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Interactable", meta = (AllowPrivateAccess = "true"))
 	float InteractableOverlapSphereRadius = 500.f;
 	
 public:	

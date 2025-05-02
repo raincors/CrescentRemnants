@@ -32,10 +32,6 @@ public:
 
 	
 	// 📝 Asset Settings
-	
-	// Can instances override settings from the DataAsset?
-	UPROPERTY(EditAnywhere, Category = "Settings")
-	bool bAllowInstancesToOverride = false;
 
 	// Should objects run default settings using the dataAsset (true), or from their own constructors (false)?
 	UPROPERTY(EditAnywhere, Category = "Settings")
