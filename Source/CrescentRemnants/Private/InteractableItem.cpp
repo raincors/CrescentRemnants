@@ -19,7 +19,10 @@ AInteractableItem::AInteractableItem()
 	// Set this actor to call Tick() every frame. Set to false as default in WorldObject.
 	PrimaryActorTick.bCanEverTick = false;
 	
-	bOneTimeUseOnly = false;
+	// Override parent class defaults to change behaviour
+	bIsPickup = false;       // This isn't a regular pickup
+	bIsInteractable = true;  // Player interacts with checkpoints
+	bOneTimeUseOnly = false;	 // Checkpoints are only used / activated once.
 
 	// Changing the inherited CapsuleCompSize to be the default Interactable settings
 	ObjectCapsuleComp->SetCapsuleSize(InteractableCapsuleRadius, InteractableCapsuleHalfHeight);

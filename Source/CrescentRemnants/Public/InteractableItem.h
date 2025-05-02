@@ -18,7 +18,7 @@ class CRESCENTREMNANTS_API AInteractableItem : public APickup
 	GENERATED_BODY()
 
 	// A SphereComponent with a bigger radius to help run e.g. animations or visuals when the player is nearby.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Interactable", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Interactable", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
 	TObjectPtr<USphereComponent> InteractableOverlapSphere;
 
 	/** --- Properties / Variables ---
