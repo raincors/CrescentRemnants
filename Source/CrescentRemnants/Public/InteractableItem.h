@@ -23,37 +23,22 @@ class CRESCENTREMNANTS_API AInteractableItem : public APickup
 
 	/** --- Properties / Variables ---
 	 * Categories (in order):
-	 * - Bools
-	 * - ObjectMesh
-	 * - CapsuleComponent
-	 * - PointLightComponent
-	 * - Float Settings
-	 * - Debug Settings
+	 * - Debug
+	 * - Object Bool
+	 * - SphereComponent
 	 */
-	
-	// Toggle whether the object destroys itself on Interact (editable from the Details panel, thanks to EditAnywhere)
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Interactable", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
-	bool bDestroyOnInteract = false;
 
-	// Toggle whether the light should turn on/off when interacted with
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Interactable", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
-	bool bInteractionTogglesLight = false;
-
-	// Is the overlap sphere visible in PlayMode?
+	// Debug - Is the overlap sphere visible in PlayMode?
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Interactable", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
 	bool bDebugIsOverlapSphereVisible = false;
 	
-	// Interaction SphereOverlapRadius (detects when a player is nearby)
+	// Object Bool - Toggle whether the object destroys itself on Interact (editable from the Details panel, thanks to EditAnywhere)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Interactable", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
-	float InteractableOverlapSphereRadius = 300.f;
-
-	// Interactable CapsuleHalfHeight (Must always be higher or equal to CapsuleRadius)
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Interactable", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
-	float InteractableCapsuleHalfHeight = 350.f;
+	bool bDestroyOnInteract = false;
 	
-	// Interaction CapsuleRadius (Must always be lower or equal to CapsuleHalfHeight)
+	// SphereComponent - Interaction SphereOverlapRadius (detects when a player is nearby)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Interactable", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
-	float InteractableCapsuleRadius = 350.f;
+	float InteractableOverlapSphereRadius = 500.f;
 	
 public:	
 	// Sets default values for this actor's properties
@@ -77,11 +62,6 @@ protected:
 
 	// Runs when OnBeginOverlap() detects the player in any of the overlap components.
 	virtual void PlayerEntersInteractable() override;
-
-	// You can read more about this function in WorldObject.h. Should not be UFUNCTION Here, since WorldObject does it.
-	virtual void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-							 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
-							 bool bFromSweep, const FHitResult& SweepResult) override;
 
 	// You can read more about this function in WorldObject.h. Should not be UFUNCTION Here, since WorldObject does it.
 	virtual void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

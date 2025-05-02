@@ -19,17 +19,31 @@ AInteractableItem::AInteractableItem()
 	// Set this actor to call Tick() every frame. Set to false as default in WorldObject.
 	PrimaryActorTick.bCanEverTick = false;
 	
-	// Override parent class defaults to change behaviour
+	// Override parent class defaults as PlayerCheckpoint constructor defaults.
+	bIsActivated = false;    // InteractableItems are not activated by default.
 	bIsPickup = false;       // This isn't a regular pickup
-	bIsInteractable = true;  // Player interacts with checkpoints
-	bOneTimeUseOnly = false;	 // Checkpoints are only used / activated once.
+	bIsInteractable = true;  // Player interacts with InteractableItems.
+	bOneTimeUseOnly = false; // InteractableItems are NOT only used once.
+	bEnableFloating = false; // InteractableItems should not float.
+	bIsLightOn = false;      // InteractableItems should not have lights on until activated via overlap.
+
+	ObjectMeshScale = FVector(1.f, 1.f, 1.f); // Default Mesh Scale for InteractableItems.
+
+	CapsuleLocationOffset = FVector(0.f, 0.f, 0.f); // Default CapsuleLocationOffset for InteractableItems.
+	CapsuleHalfHeight = 250.f; // Default CapsuleHalfHeight for InteractableItems.
+	CapsuleRadius = 250.f;	// Default CapsuleRadius for InteractableItems.
+
+	ObjectLightLocation = FVector(0.f, 0.f, 0.f); // Default LightLocation for InteractableItems.
+	LightIntensity = 1500.f; // Default LightIntensity for InteractableItems.
+	LightAttenuationRadius = 800.f; // Default LightAttenuationRadius for InteractableItems.
+	LightSourceRadius = 350.f; // Default LightSourceRadius for InteractableItems.
+
+	// Setting a constructor default DebugColour and LightColour
+	DebugColour = FColor::Cyan;
+	LightColour = FColor::Blue;
 
 	// Changing the inherited CapsuleCompSize to be the default Interactable settings
-	ObjectCapsuleComp->SetCapsuleSize(InteractableCapsuleRadius, InteractableCapsuleHalfHeight);
-	
-	// Setting a constructor default DebugColour and LightColour
-	DebugColour = FColor::Green;
-	LightColour = FColor::Emerald;
+	ObjectCapsuleComp->SetCapsuleSize(CapsuleRadius, CapsuleHalfHeight);
 	
 	InteractableOverlapSphere = CreateDefaultSubobject<USphereComponent>(TEXT("InteractableOverlapSphere"));
 
@@ -52,7 +66,7 @@ bool AInteractableItem::UseWorldObjectAssetSettings()
 	bIsPickup = SettingsAsset->bIsPickup;
 	bIsInteractable = SettingsAsset->bIsInteractable;
 	bDestroyOnInteract = SettingsAsset->bDestroyOnInteract;
-	bInteractionTogglesLight = SettingsAsset->bInteractionTogglesLight;
+	bOverlapTogglesLight = SettingsAsset->bOverlapTogglesLight;
 	bIsActivated = SettingsAsset->bIsActivated;
 
 	// Can we see the OverlapSphere in PlayMode?
@@ -123,13 +137,6 @@ void AInteractableItem::PlayerEntersInteractable()
 		bIsActivated = false;
 	}
 }
-	
-void AInteractableItem::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                       UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	// The PlayerEntersInteractable function runs from APickup.
-	Super::OnBeginOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
-}
 
 void AInteractableItem::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 									UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
@@ -164,13 +171,6 @@ TArray<UPrimitiveComponent*> AInteractableItem::GetAllOverlapComponents() const
 void AInteractableItem::OnPlayerInteract()
 {
 	UE_LOG(LogTemp, Warning, TEXT("%s was interacted with!"), *GetName());
-
-	// Toggle the light, if enabled on the object
-	if (bInteractionTogglesLight)
-	{
-		bIsLightOn = !bIsLightOn;
-		ObjectPointLightComp->SetVisibility(bIsLightOn);
-	}
 
 	// Destroy this object if set to do so
 	if (bDestroyOnInteract)
