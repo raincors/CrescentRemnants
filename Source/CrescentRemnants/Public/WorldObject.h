@@ -96,13 +96,13 @@ protected:
 	// We bind delegates here, with OnBeginOverlap and OnEndOverlap. Also runs InitialLocation.
 	virtual void BeginPlay() override;
 
-	// For subclasses - when the player starts overlapping with the object collision
+	// For subclasses - when an object starts overlapping with this object
 	UFUNCTION()
 	virtual void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 										 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 										 bool bFromSweep, const FHitResult& SweepResult);
 
-	// For subclasses - when the player stops overlapping with the object collision
+	// For subclasses - when an object stops overlapping with this object
 	UFUNCTION()
 	virtual void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
 									   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
@@ -111,7 +111,7 @@ public:
 	
 	// Virtual getters for classes to override the returns with their own instanced variables, components, etc.
 
-	// Mesh Collision Tag - For subclasses to inherit, or override. Default = TEXT("NoCollision").
+	// Mesh Collision Tag - For subclasses to inherit or override. Default = TEXT("NoCollision").
 	virtual FName GetMeshCollisionTag() const { return TEXT("NoCollision"); }
 
 	// DataAssetPath for subclasses to override with their own DataAsset path - using the Pickup_Default as base default.
