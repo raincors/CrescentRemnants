@@ -7,17 +7,17 @@
 #include "WorldObjectSettings.h"  
 #include "WorldObject.generated.h"
 
-/** This is an abstract class, and is just used as a template for the subclasses to derive components from.
- * Overall to improve readability and not have to write the same code everywhere in a lot of classes.
+/** This is an abstract class and is just used as a template for the subclasses to derive components from.
+ * Overall, to improve readability and not have to write the same code everywhere in a lot of classes.
  *
- * It uses the SettingsAsset (UWorldObjectSettings : UDataAsset) to apply variables and settings from the Editor to
- * the classes in OnConstruction(); after the constructor has initialized components. Plan A for all classes.
+ * It uses the SettingsAsset (UWorldObjectSettings: public UDataAsset) to apply variables and settings from the Editor
+ * to the classes in OnConstruction(); after the constructor has initialised components. Plan A for all classes.
  *
- * Keep in mind all constructors use default instance variables as Plan B, if Plan A doesn't work.
+ * Keep in mind all constructors use default instance variables as Plan B if Plan A doesn't work.
  *
  * WorldObject Components:
- * - SettingsAsset (UWorldObjectSettings)		- UDataAsset, with asset settings for each class.
- * - Root (USceneComponent)						- Root of the actor
+ * - SettingsAsset (UWorldObjectSettings)		- Derived from UDataAsset, with asset settings for each class.
+ * - Root (USceneComponent)						- Scene- / ObjectRoot of the actor
  */
 UCLASS(Abstract, NotBlueprintable, HideCategories=(Input, Actor, ActorTick))
 class CRESCENTREMNANTS_API AWorldObject : public AActor
@@ -32,87 +32,94 @@ public:
 	virtual bool UseWorldObjectAssetSettings();
 
 	// Shared settings asset for all world objects (to be overridden in subclasses) - public for WorldObjectSettings.cpp
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component", meta = (EditCondition = "bAllowSettingsOverride"))
 	TSoftObjectPtr<UWorldObjectSettings> SettingsAsset;
 
 protected:
 	
 	// Scene Root Component
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component", meta = (EditCondition = "bAllowSettingsOverride"))
 	TObjectPtr<USceneComponent> ObjectRoot;
 
-	// Have we tried to retrieve the Settings DataAsset? Transient to make each instance start with it at false.
+	// Have we retrieved the Settings DataAsset? Transient makes each instance start with it at false.
 	UPROPERTY(Transient)
-	bool bAttemptedRetrievalOfSettings = false;
+	bool bAttemptedRetrievalOfSettings;
 
-	// For when checkpoint is activated
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override", meta = (AllowPrivateAccess = "true"))
-	bool bIsActivated = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override", meta = (AllowPrivateAccess = "true"))
-	bool bOneTimeUseOnly = false;
+	/** --- Properties / Variables ---
+	 * Categories (in order):
+	 * - Debug
+	 * - Object Bool
+	 * - Transform
+	 */
 	
-	// Debug - Enable Debugging?
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override", meta = (AllowPrivateAccess = "true"))
+	// Debug - Enable Debugging for the instances of the class?
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
 	bool bDebugEnabled = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override", meta = (AllowPrivateAccess = "true"))
+	// Debug - What colour should instances of this class have when printing text / drawing debug lines?
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
 	FColor DebugColour = FColor::White;
 
-	// Can instances override settings from the DataAsset?
+	// Object Bool - For when the object is activated; floating, checkpoint active, platform moving, etc.
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
+	bool bIsActivated = true;
+
+	// Object Bool - Set true ONLY for objects that should be usable once (checkpoints, collectibles)
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
+	bool bOneTimeUseOnly = false;
+
+	// Object Bool - Can instances override settings from the DataAsset?
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override", meta = (AllowPrivateAccess = "true"))
 	bool bAllowSettingsOverride = false;
 	
-	// Initial location this object instance is in.
+	// Transform - Initial location this object instance is in.
 	FVector InitialLocation = FVector(0, 0, 0);
 
-	// Object Rotation for the object instance.
+	// Transform - Object Rotation for the object instance.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Transform", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
 	FRotator RootObjectRotation = FRotator(0.f, 0.f, 0.f);
 
-	// Object Scale for the object instance.
+	// Transform - Object Scale for the object instance.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Transform", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bAllowSettingsOverride"))
 	FVector RootObjectScale = FVector(1.f, 1.f, 1.f);
 	
-	/** Runs in Editor whenever a property or its transform is modified -> Very often! Be aware of this.
+#if	WITH_EDITOR
+	/** Runs in the Editor whenever a property or its transform is modified -> Very often! Be aware of this.
 	* Also runs once in PlayMode before BeginPlay().
 	* 
-	* Using a flag (bAttemptedRetrievalOfSettings) we retrieve AssetSettings once only, when the object is created.
+	* Using a flag (bAttemptedRetrievalOfSettings), we retrieve AssetSettings once when the object is created.
 	*/
 	virtual void OnConstruction(const FTransform& Transform) override;
+#endif
 	
 	// We bind delegates here, with OnBeginOverlap and OnEndOverlap. Also runs InitialLocation.
 	virtual void BeginPlay() override;
-	
-	virtual void Tick(float DeltaTime) override;
 
-#if WITH_EDITOR
-	// Runs in the Editor only, when you modify a property on an object
-	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
-#endif
-
-	// For subclasses - when player starts overlapping with the object collision
+	// For subclasses - when the player starts overlapping with the object collision
 	UFUNCTION()
 	virtual void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 										 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 										 bool bFromSweep, const FHitResult& SweepResult);
 
-	// For subclasses - when player stops overlapping with the object collision
+	// For subclasses - when the player stops overlapping with the object collision
 	UFUNCTION()
 	virtual void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
 									   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	// --- Getters ---
+public:
+	
+	// Virtual getters for classes to override the returns with their own instanced variables, components, etc.
 
-	// Mesh Collision Tag
+	// Mesh Collision Tag - For subclasses to inherit, or override. Default = TEXT("NoCollision").
 	virtual FName GetMeshCollisionTag() const { return TEXT("NoCollision"); }
 
-	// DataAssetPath for subclasses to override with their own DataAsset path - using the Pickup_default as base default.
+	// DataAssetPath for subclasses to override with their own DataAsset path - using the Pickup_Default as base default.
 	virtual FString GetDefaultSettingAssetPath() const
 	{ return TEXT("/Game/Settings/Pickup_Default.Pickup_Default"); }
 
 	// Subclasses override this to assign delegates to OnBeginOverlap or OnEndOverlap with .AddDynamic.
-	// C++ will "go down" the inheritance chain to find the most derived virtual override, and use that.
+	// C++ will "go down" the inheritance chain to find the most derived virtual override and use that.
 	virtual TArray<UPrimitiveComponent*> GetAllOverlapComponents() const { return {}; }
 	
 };
