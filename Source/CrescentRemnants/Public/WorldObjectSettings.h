@@ -10,7 +10,8 @@ class AWorldObject;
 
 /**
  * This class is a template for when you create a Data Asset inside Unreal Engine (Under Miscellaneous).
- * In there, you can assign default meshes and stuff that classes can retrieve. Classes can also override 
+ * Once created, you can assign components and their properties like default meshes, materials, colliders, etc.
+ * The other classes can then retrieve this data and apply it during class construction.
  */
 UCLASS(BlueprintType)
 class CRESCENTREMNANTS_API UWorldObjectSettings : public UDataAsset
@@ -19,7 +20,13 @@ class CRESCENTREMNANTS_API UWorldObjectSettings : public UDataAsset
 
 public:
 
-	// Press this button while you're in the DataAsset to reload and see your changes. :)
+	/**
+	* WARNING: This function may cause the editor to become unresponsive or crash if called while making
+	* other changes. Always save your work before pressing this button.
+	* 
+	* This function applies the current settings from this DataAsset to all WorldObjects in the level
+	* that reference it.
+	*/
 	UFUNCTION(CallInEditor, Category = "Settings")
 	void ApplySettingsToAllObjects();
 	
