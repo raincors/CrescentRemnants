@@ -2,6 +2,8 @@
 
 
 #include "Player/PlayerCheckpoint.h"
+
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/Character.h"
 
 /** Worth knowing is that any class deriving off of AWorldObject runs its constructor to initialise components and apply
@@ -12,7 +14,7 @@
  */
 APlayerCheckpoint::APlayerCheckpoint()
 {
-	// Set this actor to call Tick() every frame. Set to false as default.
+	// Set this actor to call Tick() every frame. 
 	PrimaryActorTick.bCanEverTick = false;
 
 	// Override parent class defaults as PlayerCheckpoint constructor defaults.
@@ -23,8 +25,7 @@ APlayerCheckpoint::APlayerCheckpoint()
 	bIsLightOn = false;      // Checkpoints should not have lights on until activated.
 
 	ObjectMeshScale = FVector(1.75f, 1.75f, 1.75f); // Default Mesh Scale for Checkpoints.
-
-	CapsuleLocationOffset = FVector(0.f, 0.f, 0.f); // Default Capsule Location for Checkpoints.
+	
 	CapsuleHalfHeight = 300.f; // Default Capsule HalfHeight for Checkpoints.
 	CapsuleRadius = 300.f;	// Default Capsule Radius for Checkpoints.
 
@@ -86,15 +87,12 @@ APlayerCheckpoint::APlayerCheckpoint()
 	}
 
 	// Assigning the mesh and the material to the StaticMeshComponent if the mesh is valid.
-	if (ObjectMesh.IsValid() && ObjectMeshComp->IsValidLowLevel())
+	if (ObjectMesh.IsValid() && ObjectMeshComp)
 	{
 		// If valid, set the mesh to the component
 		ObjectMeshComp->SetStaticMesh(ObjectMesh.Get());
-		// Pickups shouldn't have MeshCollision enabled (derived from AWorldObject). This saves on performance in-game.
-		ObjectMeshComp->SetCollisionProfileName(AWorldObject::GetMeshCollisionTag());
 
-		// Set Mesh Rotation and Scale if a mesh is found
-		ObjectMeshComp->SetWorldRotation(ObjectMeshRotation);
+		// Set the new MeshScale if a mesh is found
 		ObjectMeshComp->SetWorldScale3D(ObjectMeshScale);
 
 		if (PlayerCheckpointMaterial.IsValid())
@@ -102,6 +100,14 @@ APlayerCheckpoint::APlayerCheckpoint()
 			// If valid, set the material to the component
 			ObjectMeshComp->SetMaterial(0, ObjectMaterial.Get());
 		}
+	}
+	if (ObjectCapsuleComp)
+	{
+		// ->InitCapsuleSize here since we're initialising the component and all for the first time. Performant over SetCapsuleSize.
+		ObjectCapsuleComp->SetCapsuleSize(CapsuleRadius, CapsuleHalfHeight);
+
+		// Setting constructor defaults for the overlap capsule, to adjust it according to the object
+		ObjectCapsuleComp->SetHiddenInGame(bDebugCapsuleVisibility);
 	}
 }
 
