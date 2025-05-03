@@ -54,8 +54,6 @@ bool AWorldObject::UseWorldObjectAssetSettings()
 		return false;
 	}
 	
-	// Allow instances to override?
-	bAllowSettingsOverride = SettingsAsset->bAllowInstancesToOverride;
 	// Is the object a one-time use only?
 	bOneTimeUseOnly = SettingsAsset->bOneTimeUse;
 	// Is the object activated? To be used by subclasses; checkpoints, pickups (floating), platforms, etc.
