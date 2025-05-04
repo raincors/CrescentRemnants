@@ -8,7 +8,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/SphereComponent.h"
 #include "InputActionValue.h"
-#include "SCurveEditor.h"
+//#include "SCurveEditor.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GenericPlatform/GenericPlatformMath.h"
 #include "Player/PlayerCheckpoint.h"
@@ -268,6 +268,7 @@ void AGuardianCharacter::RemnantCollect(APickup* Pickup)
 
 void AGuardianCharacter::MemoryUnlock()
 {
+	
 	if (RemnantsProgress>=1.0)
 	{
 		Memory++;
