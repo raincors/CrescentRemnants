@@ -15,6 +15,8 @@
 #include "Pickup.h"
 #include "Blueprint/UserWidget.h"
 #include "TextBubble.h"
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
+#include "Perception/AISense_Sight.h"
 
 /**
 	* Overview and Execution Order of the code:
