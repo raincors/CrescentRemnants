@@ -125,7 +125,7 @@ class CRESCENTREMNANTS_API AGuardianCharacter : public ACharacter
 	float RemnantsCounter = 0.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Remnants", meta = (AllowPrivateAccess = "true"))
-	float MaxRemnants = 3.0f;
+	float MaxRemnants = 5.0f;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UTextBubble> TextBubbleClass;
