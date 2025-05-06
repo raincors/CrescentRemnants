@@ -14,8 +14,8 @@ public class CrescentRemnants : ModuleRules
 			"InputCore",
 			"EnhancedInput",
 			"AIModule",
-			"Gameplaytasks",
-			"Navigationsystem"
+			"GameplayTasks",
+			"NavigationSystem"
 		});
 	}
 }
