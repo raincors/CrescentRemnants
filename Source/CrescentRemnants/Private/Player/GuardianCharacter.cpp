@@ -145,7 +145,7 @@ AGuardianCharacter::AGuardianCharacter()
 
 		// Jumping
 		GetCharacterMovement()->JumpZVelocity = GuardianJumpStrength; // Jumping speed
-		GetCharacterMovement()->AirControl = 0.5f; // Control mid-air
+		GetCharacterMovement()->AirControl = 0.35f; // Control mid-air
 		JumpMaxCount = 2; // We don't want more than 2 jumps.
 	}
 
