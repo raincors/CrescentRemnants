@@ -195,31 +195,36 @@ bool APickup::UseWorldObjectAssetSettings()
 
 	if (ObjectMeshComp)
 	{
-		// Moving, rotating or scaling the mesh according to settingsAsset.
-		ObjectMeshOffset = SettingsAsset->DefaultObjectMeshLocationOffset;
-		ObjectMeshRotation = SettingsAsset->DefaultObjectMeshRotation;
-		ObjectMeshScale = SettingsAsset->DefaultObjectMeshScale;
-
-		// Set Mesh Location, Rotation and Scale if a mesh is found
-		ObjectMeshComp->SetRelativeLocation(ObjectMeshOffset);
-		ObjectMeshComp->SetRelativeRotation(ObjectMeshRotation);
-		ObjectMeshComp->SetRelativeScale3D(ObjectMeshScale);
-	}
-
-	// StaticMeshComponent Settings
-	if (SettingsAsset->DefaultMesh.IsValid())
-	{
-		ObjectMesh = SettingsAsset->DefaultMesh.LoadSynchronous();
-		ObjectMeshComp->SetStaticMesh(ObjectMesh.Get());
-		
-		// Apply the default material
-		if (SettingsAsset->DefaultMaterial.IsValid())
+		// ...and not using custom float settings on the instance.
+		if (!bUseCustomMeshSettings)
 		{
-			ObjectMaterial = SettingsAsset->DefaultMaterial.LoadSynchronous();
-			ObjectMeshComp->SetMaterial(0, ObjectMaterial.Get());
+			// Leaving this property assignment outside the function, since it is only through this codeflow we want to use it.
+			bUseCustomMeshSettings = SettingsAsset->bUseCustomMeshSettings;
+
+#if WITH_EDITOR
+			// Calling our new retrieval of float settings function 
+			RetrieveMeshAssetSettings();
+#endif
+			
+			// Set Mesh Location, Rotation and Scale if a mesh is found
+			ObjectMeshComp->SetRelativeLocation(ObjectMeshOffset);
+			ObjectMeshComp->SetRelativeRotation(ObjectMeshRotation);
+			ObjectMeshComp->SetRelativeScale3D(ObjectMeshScale);
+
+			// StaticMeshComponent Settings
+			if (ObjectMesh.IsValid())
+			{
+				ObjectMeshComp->SetStaticMesh(ObjectMesh.Get());
+		
+				// Apply the default material
+				if (ObjectMaterial.IsValid())
+				{
+					ObjectMeshComp->SetMaterial(0, ObjectMaterial.Get());
+				}
+			}
 		}
 	}
-	
+		
 	// CapsuleComponent Settings
 	CapsuleLocationOffset = SettingsAsset->DefaultCapsuleLocation;
 	CapsuleRotationOffset =	SettingsAsset->DefaultCapsuleRotation;
@@ -257,18 +262,19 @@ bool APickup::UseWorldObjectAssetSettings()
 		}
 	}
 
-	
-	// PointLightComponent Settings
-	ObjectLightLocation = SettingsAsset->DefaultLightLocation;
-	
-	LightIntensity = SettingsAsset->DefaultLightIntensity;
-	LightAttenuationRadius = SettingsAsset->DefaultAttenuationRadius;
-	LightSourceRadius = SettingsAsset->DefaultLightSourceRadius;
-	LightColour = SettingsAsset->DefaultLightColour;
-
 	// Apply default light Settings (if enabled)
 	if (ObjectPointLightComp)
 	{
+		if (!bUseCustomLightSettings)
+		{
+			bUseCustomLightSettings = SettingsAsset->bUseCustomLightSettings;
+			
+#if WITH_EDITOR
+			// Calling our new retrieval of float settings function 
+			RetrieveLightAssetSettings();
+#endif
+		}
+
 		ObjectPointLightComp->SetVisibility(bIsLightOn);
 		ObjectPointLightComp->SetRelativeLocation(ObjectLightLocation);
 		
@@ -276,8 +282,8 @@ bool APickup::UseWorldObjectAssetSettings()
 		ObjectPointLightComp->SetAttenuationRadius(LightAttenuationRadius);
 		ObjectPointLightComp->SetSourceRadius(LightSourceRadius);
 		ObjectPointLightComp->SetLightColor(LightColour);
+		ObjectPointLightComp->SetCastShadows(bDoesLightCastShadow);
 	}
-	
 	return true;
 }
 
@@ -305,6 +311,29 @@ void APickup::PlayerEntersInteractable()
 
 #if WITH_EDITOR
 
+void APickup::RetrieveMeshAssetSettings()
+{
+		// Moving, rotating or scaling the mesh according to settingsAsset.
+		ObjectMeshOffset = SettingsAsset->DefaultObjectMeshLocationOffset;
+		ObjectMeshRotation = SettingsAsset->DefaultObjectMeshRotation;
+		ObjectMeshScale = SettingsAsset->DefaultObjectMeshScale;
+
+	// StaticMeshComponent Settings
+	if (SettingsAsset->DefaultMesh.IsValid())
+	{
+		ObjectMesh = SettingsAsset->DefaultMesh.LoadSynchronous();
+		ObjectMeshComp->SetStaticMesh(ObjectMesh.Get());
+		
+		// Apply the default material
+		if (SettingsAsset->DefaultMaterial.IsValid())
+		{
+			ObjectMaterial = SettingsAsset->DefaultMaterial.LoadSynchronous();
+			ObjectMeshComp->SetMaterial(0, ObjectMaterial.Get());
+		}
+	}
+}
+	
+
 void APickup::RetrieveFloatAssetSettings()
 {
 	// Float Settings:
@@ -320,6 +349,18 @@ void APickup::RetrieveFloatAssetSettings()
 		
 	FloatingDistance = SettingsAsset->DefaultFloatingDistance;
 	FloatingSpeed = SettingsAsset->DefaultFloatingSpeed;
+}
+
+void APickup::RetrieveLightAssetSettings()
+{
+	// PointLightComponent Settings
+	ObjectLightLocation = SettingsAsset->DefaultLightLocation;
+	
+	LightIntensity = SettingsAsset->DefaultLightIntensity;
+	LightAttenuationRadius = SettingsAsset->DefaultAttenuationRadius;
+	LightSourceRadius = SettingsAsset->DefaultLightSourceRadius;
+	LightColour = SettingsAsset->DefaultLightColour;
+	bDoesLightCastShadow = SettingsAsset->bDoesLightCastShadow;
 }
 
 // This is just to run debugLines when floating, to see range of float up, and float down. Helps avoid mesh collisions. 

@@ -50,7 +50,7 @@ protected:
 	TSoftObjectPtr<UStaticMesh> ObjectMesh;
 
 	// StaticMeshComponent - Material / MaterialInstance (via UMaterialInterface)
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	TSoftObjectPtr<UMaterialInterface> ObjectMaterial;
 
 	// CapsuleComponent (for overlapping with ACharacter)
@@ -76,39 +76,49 @@ protected:
 	bool bDebugCapsuleVisibility = false;
 
 	// You can find Object Bool - "bIsPickup" below under the public accessor.
+
+	// Object Bool - Do you want to allow individual custom mesh settings for instances?
+	UPROPERTY(EditInstanceOnly, Category = "Override|Mesh", meta = (AllowPrivateAccess = "true",
+		ToolTip = "If true, you can't override the Mesh settings for this object instance via DataAssets."))
+	bool bUseCustomMeshSettings = false;
 	
 	// Object Bool - bIsInteractable - Set true for objects the player can interact with
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Override|Settings", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Settings", meta = (AllowPrivateAccess = "true"))
 	bool bIsInteractable = false;
 
 	// Object Bool - Does the object float? Default = true for APickup, but can be overriden by subclasses.
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Override|Settings", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Settings", meta = (AllowPrivateAccess = "true"))
 	bool bEnableFloating = true;
 
 	// Object Bool - If the object floats, do you want to allow individual custom float settings for instances?
-	UPROPERTY(EditAnywhere, Category = "Override|Settings", meta = (AllowPrivateAccess = "true", EditCondition = "bEnableFloating",
-		ToolTip = "If true, you can't override the float settings for this object instance via changing defaults in DataAssets."))
+	UPROPERTY(EditInstanceOnly, Category = "Override|Float", meta = (AllowPrivateAccess = "true", EditCondition = "bEnableFloating",
+		ToolTip = "If true, you can't override the float settings for this object instance via DataAssets."))
 	bool bUseCustomFloatSettings = false;
 
 	// Object Bool - Is lighting turned on for the object? Default = true.
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Override|Light", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Light", meta = (AllowPrivateAccess = "true"))
 	bool bIsLightOn = true;
 
 	// Object Bool - Does overlapping with the object turn on or off the light?
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Override|Light", meta = (AllowPrivateAccess = "true"))
 	bool bOverlapTogglesLight = true;
 
+	// Object Bool - Do you want to allow individual custom light settings for instances?
+	UPROPERTY(EditInstanceOnly, Category = "Override|Light", meta = (AllowPrivateAccess = "true",
+		ToolTip = "If true, you can't override the Light settings for this object instance via DataAssets."))
+	bool bUseCustomLightSettings = false;
+
 
 	// ObjectMesh - Location of the mesh
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Override|Mesh", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Mesh", meta = (AllowPrivateAccess = "true"))
 	FVector ObjectMeshOffset = FVector(0.f, 0.f, 0.f);
 	
 	// ObjectMesh - Rotation of the mesh
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Override|Mesh", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Mesh", meta = (AllowPrivateAccess = "true"))
 	FRotator ObjectMeshRotation = FRotator(0.f, 0.f, 0.f);
 	
 	// ObjectMesh - Scale of the mesh
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Override|Mesh", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Mesh", meta = (AllowPrivateAccess = "true"))
 	FVector ObjectMeshScale = FVector(0.5f, 0.5f, 0.5f);
 
 	
@@ -130,12 +140,12 @@ protected:
 
 
 	// Float Settings - Which axis should the object float along? The default is Z-axis (up/down).
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Float", meta = (AllowPrivateAccess = "true", EditCondition = "bEnableFloating",
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Float", meta = (AllowPrivateAccess = "true", EditCondition = "bEnableFloating",
 		ToolTip = "The axis along which the object will float. Use (1,0,0) for X, (0,1,0) for Y, or (0,0,1) for Z"))
 	FVector FloatAxis = FVector(0.f, 0.f, 1.f);
 
-	// Float Settings - Starting offset in the float range (-1.0 to 1.0) where 0.0 is center, 1.0 is top, -1.0 is bottom.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Float", meta = (AllowPrivateAccess = "true", EditCondition = "bEnableFloating", 
+	// Float Settings - Starting offset in the float range (-1.0 to 1.0) where 0.0 is the centre, 1.0 is top, -1.0 is bottom.
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Float", meta = (AllowPrivateAccess = "true", EditCondition = "bEnableFloating", 
 		ClampMin = "-1.0", ClampMax = "1.0"))
 	float FloatStartPosition = 0.0f;
 
@@ -143,7 +153,7 @@ protected:
 	float CurrentFloatPosition = 0.0f;
 
 	// Float Settings - Does the object start moving in a positive direction?
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Float", meta = (AllowPrivateAccess = "true", EditCondition = "bEnableFloating",
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Float", meta = (AllowPrivateAccess = "true", EditCondition = "bEnableFloating",
 		ToolTip = "If true, movement will start in the positive direction along the chosen axis. If false, it will start in the negative direction."))
 	bool bStartInPositiveDirection = true;
 
@@ -151,19 +161,19 @@ protected:
 	bool bIsMovingInPositiveDirection = false;
 
 	// Float Settings - Should we use sine wave movement (smooth) or ping-pong movement (consistent)?
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Float", meta = (AllowPrivateAccess = "true", EditCondition = "bEnableFloating"))
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Float", meta = (AllowPrivateAccess = "true", EditCondition = "bEnableFloating"))
 	bool bUseSineWave = true;
 	
 	// Float Settings - FloatingDistance default at 10.f. 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Float", meta = (AllowPrivateAccess = "true", EditCondition = "bEnableFloating"))
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Float", meta = (AllowPrivateAccess = "true", EditCondition = "bEnableFloating"))
 	float FloatingDistance = 10.f;
 
 	// Float Settings - FloatingSpeed default at 2.2f.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Float", meta = (AllowPrivateAccess = "true", EditCondition = "bEnableFloating"))
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Float", meta = (AllowPrivateAccess = "true", EditCondition = "bEnableFloating"))
 	float FloatingSpeed = 2.2f;
 
 	// Float Settings - When about to switch directions, how long do you stop before continuing to float? Default at 0.0f.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Float", meta = (AllowPrivateAccess = "true", EditCondition = "bEnableFloating"))
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Float", meta = (AllowPrivateAccess = "true", EditCondition = "bEnableFloating"))
 	float FloatPauseDuration = 0.0f;
 
 	// Float Settings - Handle for waiting the amount of time needed for the delay, and stored counter.
@@ -171,27 +181,31 @@ protected:
 	float StoredFloatPausedTime = 0.0f;
 
 	// Float Setting - Is floating paused?
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Float", meta = (AllowPrivateAccess = "true", EditCondition = "bEnableFloating"))
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Float", meta = (AllowPrivateAccess = "true", EditCondition = "bEnableFloating"))
 	bool bFloatIsPaused = false;
 	
 	// PointLightComponent - Where is your lightComponent locally placed according to the object transform?
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Override|Light", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Light", meta = (AllowPrivateAccess = "true"))
 	FVector ObjectLightLocation = FVector(0.f, 0.f, -40.f);
 
 	// PointLightComponent - How strong is the light? 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Override|Light", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Light", meta = (AllowPrivateAccess = "true"))
 	float LightIntensity = 400.f;
 
 	// PointLightComponent - How far does the outer lightSphere reach out? This quickly becomes expensive with large values.
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Override|Light", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Light", meta = (AllowPrivateAccess = "true"))
 	float LightAttenuationRadius = 200.f;
 
 	// PointLightComponent - How far does the innermost lightSphere reach?
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Override|Light", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Light", meta = (AllowPrivateAccess = "true"))
 	float LightSourceRadius = 100.f;
 
+	// PointLightComponent - Does the light cast shadows?
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Light", meta = (AllowPrivateAccess = "true"))
+	bool bDoesLightCastShadow = false;
+
 	// PointLightComponent - What colour is your light?
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Override|Light", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override|Light", meta = (AllowPrivateAccess = "true"))
 	FColor LightColour = FColor::Yellow;
 	
 public:
@@ -211,10 +225,17 @@ protected:
 	virtual void PlayerEntersInteractable();
 
 #if WITH_EDITOR
+	// To be used when using custom instanced float settings and wanting to retrieve settings from the assetSettings.
+	UFUNCTION(CallInEditor, Category = "Override|Mesh", meta = (AllowPrivateAccess = "true"))
+	virtual void RetrieveMeshAssetSettings();
 	
 	// To be used when using custom instanced float settings and wanting to retrieve settings from the assetSettings.
-	UFUNCTION(CallInEditor, Category = "Override|Float", meta = (AllowPrivateAccess = "true",EditCondition = "bEnableFloating", EditConditionHides))
+	UFUNCTION(CallInEditor, Category = "Override|Float", meta = (AllowPrivateAccess = "true"))
 	virtual void RetrieveFloatAssetSettings();
+
+	// To be used when using custom instanced float settings and wanting to retrieve settings from the assetSettings.
+	UFUNCTION(CallInEditor, Category = "Override|Light", meta = (AllowPrivateAccess = "true"))
+	virtual void RetrieveLightAssetSettings();
 	
 	// Used to draw a debugLine for the float distance. Only to be run inside the Editor in this class.
 	virtual void OnConstruction(const FTransform& Transform) override;
