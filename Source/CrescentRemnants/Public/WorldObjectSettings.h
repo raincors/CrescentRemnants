@@ -17,14 +17,10 @@ class AWorldObject;
  * - Debug Settings
  * - Transform Settings
  * - Mesh Settings
- * - BoxCollision Settings (UNUSED)
- * - SphereCollision Settings (UNUSED)
  * - CapsuleCollision Settings
  * - Float Settings
  * - Light Settings
- * - Interactable Settings (UNUSED)
  * - Platform Settings
- * - Hazard Settings (UNUSED)
  */
 UCLASS(BlueprintType)
 class CRESCENTREMNANTS_API UWorldObjectSettings : public UDataAsset
@@ -132,39 +128,6 @@ public:
 	FVector DefaultObjectMeshScale = FVector(1.f, 1.f, 1.f);
 
 	
-	// 📦 Box Collision Settings - UNUSED
-	
-	UPROPERTY(EditAnywhere, Category = "Collision")
-	bool bHasBoxCollision = false;
-
-	UPROPERTY(EditAnywhere, Category = "Collision|Box", meta = (EditCondition = "bHasBoxCollision && bEnableDebug"))
-	bool bDebugIsBoxCollisionVisible = false;
-
-	UPROPERTY(EditAnywhere, Category = "Collision|Box", meta = (EditCondition = "bHasBoxCollision", EditConditionHides))
-	FVector DefaultBoxLocation = FVector(0.f, 0.f, 0.f);
-	
-	UPROPERTY(EditAnywhere, Category = "Collision|Box", meta = (EditCondition = "bHasBoxCollision", EditConditionHides))
-	FRotator DefaultBoxRotation = FRotator(0.f, 0.f, 0.f);
-
-	UPROPERTY(EditAnywhere, Category = "Collision|Box", meta = (EditCondition = "bHasBoxCollision", EditConditionHides))
-	FVector DefaultBoxExtents = FVector(60.f, 60.f, 60.f);
-
-	
-	// ⚽ Sphere Collision Settings - UNUSED
-	
-	UPROPERTY(EditAnywhere, Category = "Collision")
-	bool bHasSphereCollision = false;
-
-	UPROPERTY(EditAnywhere, Category = "Collision|Sphere", meta = (EditCondition = "bHasSphereCollision && bEnableDebug"))
-	bool bDebugIsSphereCollisionVisible = false;
-	
-	UPROPERTY(EditAnywhere, Category = "Collision|Sphere", meta = (EditCondition = "bHasSphereCollision", EditConditionHides))
-	FVector DefaultSphereLocation = FVector(0.f, 0.f, 0.f);
-
-	UPROPERTY(EditAnywhere, Category = "Collision|Sphere", meta = (EditCondition = "bHasSphereCollision", EditConditionHides))
-	float DefaultSphereRadius = 60.f;
-
-	
 	// 💊 Capsule Collision Settings
 	
 	UPROPERTY(EditAnywhere, Category = "Collision")
@@ -252,22 +215,4 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category = "Interactable", meta = ( EditCondition = "bIsInteractable", EditConditionHides))
 	bool bDestroyOnInteract = false;
-
-
-	// 🎮 Platform Settings
-	
-	UPROPERTY(EditAnywhere, Category = "Movement|Platform", meta = (EditCondition = "bIsPlatform", EditConditionHides))
-	bool bIsBreakable = false;
-
-	UPROPERTY(EditAnywhere, Category = "Movement|Platform", meta = (EditCondition = "bIsPlatform", EditConditionHides))
-	bool bMoveOnlyWhenPlayerOn = true;
-
-	
-	// ⚠️ Hazard Settings (For obstacles) - UNUSED
-
-	UPROPERTY(EditAnywhere, Category = "Hazard", meta = (EditCondition = "bIsHazard", EditConditionHides))
-	bool isLethal = false;
-	
-	UPROPERTY(EditAnywhere, Category = "Hazard", meta = (EditCondition = "bIsHazard", EditConditionHides))
-	FText DefaultDeathMessage = FText::FromString("Uh-oh, you got Zoinked!");
 };

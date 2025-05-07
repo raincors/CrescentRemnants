@@ -262,7 +262,7 @@ bool APickup::UseWorldObjectAssetSettings()
 		}
 	}
 
-	// Apply default light Settings (if enabled)
+	// Apply default PointLightComp Settings (if enabled)
 	if (ObjectPointLightComp)
 	{
 		if (!bUseCustomLightSettings)
@@ -311,6 +311,7 @@ void APickup::PlayerEntersInteractable()
 
 #if WITH_EDITOR
 
+// Retrieve the Mesh Settings from the SettingsAsset
 void APickup::RetrieveMeshAssetSettings()
 {
 		// Moving, rotating or scaling the mesh according to settingsAsset.
@@ -333,7 +334,7 @@ void APickup::RetrieveMeshAssetSettings()
 	}
 }
 	
-
+// Retrieve the Float Settings from the SettingsAsset
 void APickup::RetrieveFloatAssetSettings()
 {
 	// Float Settings:
@@ -351,6 +352,7 @@ void APickup::RetrieveFloatAssetSettings()
 	FloatingSpeed = SettingsAsset->DefaultFloatingSpeed;
 }
 
+// Retrieve the Light Settings from the SettingsAsset
 void APickup::RetrieveLightAssetSettings()
 {
 	// PointLightComponent Settings
@@ -901,7 +903,7 @@ void APickup::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* O
 }
 
 // Add any overlapComponents in your class but ensure you do not add your component more than once.
-// 
+// Since it is a virtual override, you just insert every component your class currently uses.
 TArray<UPrimitiveComponent*> APickup::GetAllOverlapComponents() const
 {
 	TArray<UPrimitiveComponent*> OverlapComponents;

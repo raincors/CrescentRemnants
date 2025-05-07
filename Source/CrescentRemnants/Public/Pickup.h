@@ -22,7 +22,8 @@ class UPointLightComponent;
  * - ObjectMesh (UStaticMesh)				- Mesh
  * - ObjectMaterial (UMaterialInterface)	- Material or MaterialInstance, through the MaterialInterface
  * - CapsuleComp (UCapsuleComponent)		- Collision volume, via a capsule
- * - PointLightComp (UPointLight)			- Component for creating visual glow / light
+ * - PointLightComp (UPointLight)			- Component for creating visual light
+ *
  */
 UCLASS(Blueprintable)
 class CRESCENTREMNANTS_API APickup : public AWorldObject
