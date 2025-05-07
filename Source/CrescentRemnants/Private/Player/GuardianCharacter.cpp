@@ -10,6 +10,11 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GenericPlatform/GenericPlatformMath.h"
 #include "Player/PlayerCheckpoint.h"
+#include "Pickup.h"
+#include "Blueprint/UserWidget.h"
+#include "TextBubble.h"
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
+#include "Perception/AISense_Sight.h"
 
 /**
 	* Overview and Execution Order of the code:
@@ -143,9 +148,12 @@ AGuardianCharacter::AGuardianCharacter()
 		GetCharacterMovement()->AirControl = 0.5f; // Control mid-air
 		JumpMaxCount = 2; // We don't want more than 2 jumps.
 	}
+
+	//Registers the player with the perception system, which allows enemies to spot them
+	SetupStimulusSource();
 }
 
-// For drawing debug with the GuardianCharacter as needed during testing.
+// For drawing debug with the GuardianCharacter as needed during testing. Only called when bDebugEnabled.
 void AGuardianCharacter::DebugDraw() const
 {
 	// Debug movement ForwardDirection
@@ -207,6 +215,47 @@ void AGuardianCharacter::Tick20Frames() const
 	{
 		// DebugGroundCheck();
 		DebugDraw();
+	}
+}
+
+void AGuardianCharacter::RemnantCollect(APickup* Pickup)
+{
+	if (Pickup == nullptr)
+		return;
+	if (RemnantsProgress<1.0)
+	{
+		if (Pickup->bIsPickup==true)
+		{
+			Pickup->Destroy();
+			RemnantsCounter++;
+			RemnantsProgress = RemnantsCounter/MaxRemnants;
+			GEngine->AddOnScreenDebugMessage(-1,15.0f,FColor::Magenta, FString::SanitizeFloat(RemnantsProgress));
+		}
+	}
+}
+
+void AGuardianCharacter::MemoryUnlock()
+{
+	
+	if (RemnantsProgress>=1.0)
+	{
+		Memory++;
+		APlayerController* PC = Cast<APlayerController>(GetController());
+		if (PC && TextBubbleClass)
+		{
+			TextBubble=CreateWidget<UTextBubble>(PC, TextBubbleClass);
+			TextBubble->AddToViewport();
+		}
+
+	}
+}
+
+void AGuardianCharacter::ResetRemnantProgress()
+{
+	if (RemnantsProgress>=1.0)
+	{
+		RemnantsCounter = 0.0f;
+		RemnantsProgress = 0.0f;
 	}
 }
 
@@ -304,5 +353,17 @@ void AGuardianCharacter::NotifyActorBeginOverlap(AActor* OtherActor)
 	else if (OtherActor && Cast<ACharacter>(OtherActor)) // Assuming the Enemy AI are the only ACharacters.
 	{
 		GuardianDeath(OtherActor);
+	}
+}
+
+void AGuardianCharacter::SetupStimulusSource()
+{
+	//Creates Stimulus Source for enemyAI
+	StimulusSource = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("Stimulus"));
+	if (StimulusSource)
+	{
+		//Registers the Stimulus Source with the perception system
+		StimulusSource->RegisterForSense(TSubclassOf<UAISense_Sight>());
+		StimulusSource->RegisterWithPerceptionSystem();
 	}
 }

@@ -74,12 +74,9 @@ protected:
 	// Debug - Is the capsule collider going to be visible in-game?
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Override|Debug", meta = (AllowPrivateAccess = "true"), meta = (EditCondition = "bDebugEnabled"))
 	bool bDebugCapsuleVisibility = false;
-	
-	
-	// Object Bool - bIsPickup - Set true ONLY for objects that can be collected and removed from the world
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Override|Settings", meta = (AllowPrivateAccess = "true"))
-	bool bIsPickup = true;
 
+	// You can find Object Bool - "bIsPickup" below under the public accessor.
+	
 	// Object Bool - bIsInteractable - Set true for objects the player can interact with
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Override|Settings", meta = (AllowPrivateAccess = "true"))
 	bool bIsInteractable = false;
@@ -200,6 +197,10 @@ protected:
 public:
 	// Constructors should be public in Unreal Engine. Otherwise, you will have trouble spawning your object.
 	APickup();
+
+	// Object Bool - bIsPickup - Set true ONLY for objects that can be collected and removed from the world
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Override|Settings", meta = (AllowPrivateAccess = "true"))
+	bool bIsPickup = true;
 
 protected:
 

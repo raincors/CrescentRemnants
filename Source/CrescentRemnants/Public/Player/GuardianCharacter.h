@@ -14,6 +14,9 @@ class USpringArmComponent;
 class UCameraComponent;
 class UCharacterMovementComponent;
 class AGuardianController;
+class APickup;
+class UTextBubble;
+class AGuardianController;
 
 UCLASS()
 class CRESCENTREMNANTS_API AGuardianCharacter : public ACharacter
@@ -79,6 +82,27 @@ class CRESCENTREMNANTS_API AGuardianCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug", meta = (AllowPrivateAccess = "true"))
 	bool bDebugEnabled = false;
 
+	// Remnants Pickup variables:
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Remnants", meta = (AllowPrivateAccess = "true"))
+	float RemnantsProgress = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Remnants", meta = (AllowPrivateAccess = "true"))
+	int Memory = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Remnants", meta = (AllowPrivateAccess = "true"))
+	float RemnantsCounter = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Remnants", meta = (AllowPrivateAccess = "true"))
+	float MaxRemnants = 5.0f;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UTextBubble> TextBubbleClass;
+
+	UPROPERTY()
+	UTextBubble* TextBubble;
+	// Remnant pick-ups variables ^^^
+
 	// Our own custom Tick (instead of running 60 frames a second, we do 20 frames a second)
 	void Tick20Frames() const;
 	
@@ -117,6 +141,21 @@ public:
 	// Called for when the player dies
 	UFUNCTION(BlueprintCallable, Category = "Character")
 	void GuardianDeath(AActor* OtherActor);
+
+	UFUNCTION(BlueprintCallable)
+	void RemnantCollect(APickup* Pickup);
+	
+	UFUNCTION(BlueprintCallable)
+	void MemoryUnlock();
+
+	UFUNCTION(BlueprintCallable)
+	void ResetRemnantProgress();
+
+private:
+	
+	//class and function for the enemyAI's perception system
+	class UAIPerceptionStimuliSourceComponent* StimulusSource;
+	void SetupStimulusSource();
 
 protected:
 
