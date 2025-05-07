@@ -53,31 +53,31 @@ protected:
 	 */
 	
 	// Debug - Enable Debugging for the instances of the class?
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override | Settings", meta = (AllowPrivateAccess = "true"))
 	bool bDebugEnabled = false;
 
 	// Debug - What colour should instances of this class have when printing text / drawing debug lines?
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override | Settings", meta = (AllowPrivateAccess = "true"))
 	FColor DebugColour = FColor::White;
 
 	// Object Bool - For when the object is activated; floating, checkpoint active, platform moving, etc.
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Override | Settings", meta = (AllowPrivateAccess = "true"))
 	bool bIsActivated = true;
 
 	// Object Bool - Set true ONLY for objects that should be usable once (checkpoints, collectibles)
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override | Settings", meta = (AllowPrivateAccess = "true"))
 	bool bOneTimeUseOnly = false;
 	
 	// Transform - Initial location this object instance is in.
 	FVector InitialLocation = FVector(0, 0, 0);
 
 	// Transform - Object Rotation for the object instance.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Transform", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Override|Transform", meta = (AllowPrivateAccess = "true"))
 	FRotator RootObjectRotation = FRotator(0.f, 0.f, 0.f);
 
 	// Transform - Object Scale for the object instance.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Override|Transform", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Override|Transform", meta = (AllowPrivateAccess = "true"))
 	FVector RootObjectScale = FVector(1.f, 1.f, 1.f);
 	
 #if	WITH_EDITOR

@@ -73,16 +73,24 @@ public:
 	// Is this object floating? Pickups, platforms, etc.
 	UPROPERTY(EditAnywhere, Category = "Settings")
 	bool bEnableFloating = false;
-
-	// If this object is floating, do you allow instances to have custom properties?
-	UPROPERTY(EditAnywhere, Category = "Settings", meta = (EditCondition = "bEnableFloating",
-		ToolTip = "If true, you can't override the float settings for this object instance via changing defaults in DataAssets."))
-	bool bUseCustomFloatSettings = false;
-
+	
 	// Is this activated from the start? Pickup floating, Checkpoint active, or platform moving, or hazard active etc...
 	UPROPERTY(EditAnywhere, Category = "Settings")
 	bool bIsActivated = true;
 
+	// Do you allow instances to have custom Mesh properties?
+	UPROPERTY(EditAnywhere, Category = "Settings", meta = (ToolTip = "If true, you can't override the mesh settings for this object instance via DataAssets."))
+	bool bUseCustomMeshSettings = false;
+
+	// If this object is floating, do you allow instances to have custom properties?
+	UPROPERTY(EditAnywhere, Category = "Settings", meta = (EditCondition = "bEnableFloating",
+		ToolTip = "If true, you can't override the float settings for this object instance via DataAssets."))
+	bool bUseCustomFloatSettings = false;
+
+	// Do you allow instances to have custom light properties?
+	UPROPERTY(EditAnywhere, Category = "Settings", meta = (ToolTip = "If true, you can't override the light settings for this object instance via DataAssets."))
+	bool bUseCustomLightSettings = false;
+	
 	
 	// 🐛 Debug Settings (Note that some debug settings are located inside other settings, due to dependencies)
 	
@@ -230,6 +238,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Light", meta = (EditCondition = "bHasLightComponent", EditConditionHides))
 	float DefaultLightSourceRadius = 100.f;
 
+	UPROPERTY(EditAnywhere, Category = "Light", meta = (EditCondition = "bHasLightComponent", EditConditionHides))
+	bool bDoesLightCastShadow = true;
+	
 	UPROPERTY(EditAnywhere, Category = "Light", meta = (EditCondition = "bHasLightComponent", EditConditionHides))
 	FColor DefaultLightColour = FColor::White;
 	
