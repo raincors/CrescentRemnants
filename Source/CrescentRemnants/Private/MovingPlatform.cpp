@@ -28,9 +28,9 @@ AMovingPlatform::AMovingPlatform()
 	CapsuleRadius = 300.f;	// Default Capsule Radius for Platforms.
 
 	ObjectLightLocation = FVector(0.f, 0.f, 0.f); // Default LightLocation for Platforms.
-	LightIntensity = 1000.f; // Default LightIntensity for Platforms.
-	LightAttenuationRadius = 600.f; // Default LightAttenuationRadius for Platforms.
-	LightSourceRadius = 200.f; // Default LightSourceRadius for Platforms.
+	LightIntensity = 4000.f; // Default LightIntensity for Platforms.
+	LightAttenuationRadius = 300.f; // Default LightAttenuationRadius for Platforms.
+	LightSourceRadius = 0.f; // Default LightSourceRadius for Platforms.
 
 	// Setting DebugColor and LightColour.
 	DebugColour = FColor::Orange;
@@ -121,6 +121,8 @@ AMovingPlatform::AMovingPlatform()
 		// The default response to other collision channels is to block them. Platforms care for other collisions.
 		ObjectCapsuleComp->SetCollisionResponseToAllChannels(ECR_Block);
 	}
+
+	
 }
 
 bool AMovingPlatform::UseWorldObjectAssetSettings()
