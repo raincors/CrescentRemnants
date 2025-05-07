@@ -107,7 +107,7 @@ AGuardianCharacter::AGuardianCharacter()
 	// Enabling camera collision avoidance - to avoid clipping through the environment
 	CameraBoom->bDoCollisionTest = true;
 	// Adjusting the camera sphere collision query size, the smaller the sphere, the more precise it is.
-	CameraBoom->ProbeSize = 50.0f;
+	CameraBoom->ProbeSize = 38.0f;
 	// Choosing the right collision channel for the cameraBoom (static objects generally should block ECC_Camera)
 	CameraBoom->ProbeChannel = ECC_Camera;
 
@@ -140,7 +140,7 @@ AGuardianCharacter::AGuardianCharacter()
 		// Walking
 		GetCharacterMovement()->MaxWalkSpeed = GuardianCurrentMoveSpeed; // Walking speed
 		GetCharacterMovement()->MaxStepHeight = 90.f; // Max step height
-		GetCharacterMovement()->SetWalkableFloorAngle(65.f); // What tall ledges can you ascend?
+		GetCharacterMovement()->SetWalkableFloorAngle(45.f); // What tall ledges can you ascend?
 		GetCharacterMovement()->bCanWalkOffLedges = true; // Allow ledge climbing or walking off edges
 
 		// Jumping
