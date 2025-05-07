@@ -12,6 +12,19 @@ class AWorldObject;
  * This class is a template for when you create a Data Asset inside Unreal Engine (Under Miscellaneous).
  * Once created, you can assign components and their properties like default meshes, materials, colliders, etc.
  * The other classes can then retrieve this data and apply it during class construction.
+ *
+ * - Asset Settings
+ * - Debug Settings
+ * - Transform Settings
+ * - Mesh Settings
+ * - BoxCollision Settings (UNUSED)
+ * - SphereCollision Settings (UNUSED)
+ * - CapsuleCollision Settings
+ * - Float Settings
+ * - Light Settings
+ * - Interactable Settings (UNUSED)
+ * - Platform Settings
+ * - Hazard Settings (UNUSED)
  */
 UCLASS(BlueprintType)
 class CRESCENTREMNANTS_API UWorldObjectSettings : public UDataAsset
@@ -49,7 +62,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Settings")
 	bool bIsPlatform = false;
 
-	// Is this a hazard? (Unused)
+	// Is this a hazard? (UNUSED)
 	UPROPERTY(EditAnywhere, Category = "Settings")
 	bool bIsHazard = false;
 
@@ -60,6 +73,11 @@ public:
 	// Is this object floating? Pickups, platforms, etc.
 	UPROPERTY(EditAnywhere, Category = "Settings")
 	bool bEnableFloating = false;
+
+	// If this object is floating, do you allow instances to have custom properties?
+	UPROPERTY(EditAnywhere, Category = "Settings", meta = (EditCondition = "bEnableFloating",
+		ToolTip = "If true, you can't override the float settings for this object instance via changing defaults in DataAssets."))
+	bool bUseCustomFloatSettings = false;
 
 	// Is this activated from the start? Pickup floating, Checkpoint active, or platform moving, or hazard active etc...
 	UPROPERTY(EditAnywhere, Category = "Settings")
@@ -85,7 +103,7 @@ public:
 	FVector DefaultObjectScale = FVector(1.f, 1.f, 1.f);
 
 	
-	// 🌟 Visual Settings
+	// 🌟 Mesh Settings
 	
 	UPROPERTY(EditAnywhere, Category = "Visuals", meta = (EditCondition = "bHasMesh", EditConditionHides))
 	bool bHasMesh = true;
@@ -95,6 +113,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category = "Visuals", meta = (EditCondition = "bHasMesh", EditConditionHides))
 	TSoftObjectPtr<UMaterialInterface> DefaultMaterial = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = "Visuals", meta = (EditCondition = "bHasMesh", EditConditionHides))
+	FVector DefaultObjectMeshLocationOffset = FVector(0.f, 0.f, 0.f);
 	
 	UPROPERTY(EditAnywhere, Category = "Visuals", meta = (EditCondition = "bHasMesh", EditConditionHides))
 	FRotator DefaultObjectMeshRotation = FRotator(0.f, 0.f, 0.f);
@@ -103,7 +124,7 @@ public:
 	FVector DefaultObjectMeshScale = FVector(1.f, 1.f, 1.f);
 
 	
-	// 📦 Box Collision Overlap Settings
+	// 📦 Box Collision Settings - UNUSED
 	
 	UPROPERTY(EditAnywhere, Category = "Collision")
 	bool bHasBoxCollision = false;
@@ -121,7 +142,7 @@ public:
 	FVector DefaultBoxExtents = FVector(60.f, 60.f, 60.f);
 
 	
-	// ⚽ Sphere Collision Overlap Settings
+	// ⚽ Sphere Collision Settings - UNUSED
 	
 	UPROPERTY(EditAnywhere, Category = "Collision")
 	bool bHasSphereCollision = false;
@@ -136,7 +157,7 @@ public:
 	float DefaultSphereRadius = 60.f;
 
 	
-	// 💊 Capsule Collision Overlap Settings
+	// 💊 Capsule Collision Settings
 	
 	UPROPERTY(EditAnywhere, Category = "Collision")
 	bool bHasCapsuleCollision = false;
@@ -151,22 +172,42 @@ public:
 	FRotator DefaultCapsuleRotation = FRotator(0.f, 0.f, 0.f);
 
 	UPROPERTY(EditAnywhere, Category = "Collision|Capsule", meta = (EditCondition = "bHasCapsuleCollision", EditConditionHides))
-	FVector DefaultCapsuleScale = FVector(1.f, 1.f, 1.f);
-
-	UPROPERTY(EditAnywhere, Category = "Collision|Capsule", meta = (EditCondition = "bHasCapsuleCollision", EditConditionHides))
 	float DefaultCapsuleHalfHeight = 60.f;
 	
 	UPROPERTY(EditAnywhere, Category = "Collision|Capsule", meta = (EditCondition = "bHasCapsuleCollision", EditConditionHides))
 	float DefaultCapsuleRadius = 60.f;;
 
 	
-	// 🛟 Float Settings (For pickups, platforms, (and maybe hazards))
+	// 🛟 Float Settings 
+
+	// Which axis should the object float along? The default is Z-axis (up/down).
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Float", meta = (EditCondition = "bEnableFloating", EditConditionHides,
+		ToolTip = "The axis along which the object will float. Use (1,0,0) for X, (0,1,0) for Y, or (0,0,1) for Z"))
+	FVector DefaultFloatAxis = FVector(0.f, 0.f, 1.f);
+
+	// Starting offset in the float range (-1.0 to 1.0), where 0.0 is center, 1.0 is top, -1.0 is bottom.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Float", meta = (EditCondition = "bEnableFloating", EditConditionHides, 
+		ClampMin = "-1.0", ClampMax = "1.0"))
+	float DefaultFloatStartPosition = 0.0f;
+
+	// Does the object start moving in a positive direction?
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Float", meta = (EditCondition = "bEnableFloating", EditConditionHides,
+		ToolTip = "If true, movement will start in the positive direction along the chosen axis. If false, it will start in the negative direction."))
+	bool bStartInPositiveDirection = true;
+
+	// Should we use sine wave movement (smooth) or ping-pong movement (consistent)?
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Float", meta = (EditCondition = "bEnableFloating", EditConditionHides))
+	bool bUseSineWave = true;
 	
-	UPROPERTY(EditAnywhere, Category = "Movement", meta = (EditCondition = "bEnableFloating", EditConditionHides))
+	UPROPERTY(EditAnywhere, Category = "Float", meta = (EditCondition = "bEnableFloating", EditConditionHides))
 	float DefaultFloatingDistance = 10.f;
 
-	UPROPERTY(EditAnywhere, Category = "Movement", meta = (EditCondition = "bEnableFloating", EditConditionHides))
+	UPROPERTY(EditAnywhere, Category = "Float", meta = (EditCondition = "bEnableFloating", EditConditionHides))
 	float DefaultFloatingSpeed = 2.2f;
+
+	// Float Settings - When about to switch directions, how long do you stop before continuing to float?
+	UPROPERTY(EditAnywhere, Category = "Float", meta = (EditCondition = "bEnableFloating", EditConditionHides))
+	float DefaultFloatStopDelay = 0.0f;
 
 	
 	// 💡 Light Settings (for pickups or platforms that glow)
