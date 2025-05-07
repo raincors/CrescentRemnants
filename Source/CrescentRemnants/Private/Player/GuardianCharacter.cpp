@@ -128,7 +128,7 @@ AGuardianCharacter::AGuardianCharacter()
 	{
 		// Ensuring right movement mode and animation is played + gravity.
 		GetCharacterMovement()->SetMovementMode(MOVE_Walking);
-		GetCharacterMovement()->GravityScale = 1.0f; // Default gravity scale (adjust if needed)
+		GetCharacterMovement()->GravityScale = 1.15f; // Default gravity scale (adjust if needed)
 
 		// Character orientation
 		GetCharacterMovement()->bOrientRotationToMovement = true; // Turns character in towards Movement
