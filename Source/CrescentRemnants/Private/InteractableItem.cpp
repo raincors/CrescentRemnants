@@ -19,7 +19,7 @@ AInteractableItem::AInteractableItem()
 	// Set this actor to call Tick() every frame. Set to false as default in WorldObject.
 	PrimaryActorTick.bCanEverTick = false;
 	
-	// Override parent class defaults as PlayerCheckpoint constructor defaults.
+	// Override parent class defaults as InteractableItem constructor defaults.
 	bIsActivated = false;    // InteractableItems are not activated by default.
 	bIsPickup = false;       // This isn't a regular pickup
 	bIsInteractable = true;  // Player interacts with InteractableItems.
