@@ -8,7 +8,8 @@ public class CrescentRemnants : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core",
+		PublicDependencyModuleNames.AddRange(new string[] 
+		{   "Core",
 			"CoreUObject",
 			"Engine",
 			"InputCore",

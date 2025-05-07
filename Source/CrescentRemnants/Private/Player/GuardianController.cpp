@@ -63,23 +63,11 @@ void AGuardianController::SetupInputComponent()
 		if (IA_Jump) { UE_LOG(LogTemp, Warning, TEXT("💂 Successfully loaded IA_Jump")); }
 		else { UE_LOG(LogTemp, Error, TEXT("❌ Failed to load IA_Jump!")); }
 	}
-	if (!IA_Interact)
-	{
-		IA_Interact = Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, TEXT("InputAction'/Game/Input/IA_Interact.IA_Interact'")));
-		if (IA_Interact) { UE_LOG(LogTemp, Warning, TEXT("💂 Successfully loaded IA_Interact")); }
-		else { UE_LOG(LogTemp, Error, TEXT("❌ Failed to load IA_Interact!")); }
-	}
 	if (!IA_Look)
 	{
 		IA_Look = Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, TEXT("InputAction'/Game/Input/IA_Look.IA_Look'")));
 		if (IA_Look) { UE_LOG(LogTemp, Warning, TEXT("💂 Successfully loaded IA_Look")); }
 		else { UE_LOG(LogTemp, Error, TEXT("❌ Failed to load IA_Look!")); }
-	}
-	if (!IA_Escape)
-	{
-		IA_Escape = Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, TEXT("InputAction'/Game/Input/IA_Escape.IA_Escape'")));
-		if (IA_Escape) { UE_LOG(LogTemp, Warning, TEXT("💂 Successfully loaded IA_Escape")); }
-		else { UE_LOG(LogTemp, Error, TEXT("❌ Failed to load IA_Escape!")); }
 	}
 	
 	// 4. Get the Local Player Subsystem - which manages input mappings per local player.
@@ -142,17 +130,9 @@ void AGuardianController::BindInputs(AGuardianCharacter* GuardianCharacter, UEnh
 	if (GetIA_Jump())
 	{
 		EnhancedInputComponent->BindAction(GetIA_Jump(), ETriggerEvent::Started, GuardianCharacter, &AGuardianCharacter::GuardianJump);
-		EnhancedInputComponent->BindAction(GetIA_Jump(), ETriggerEvent::Completed, GuardianCharacter, &AGuardianCharacter::GuardianStopJumping);
+		EnhancedInputComponent->BindAction(GetIA_Jump(), ETriggerEvent::Completed, GuardianCharacter, &AGuardianCharacter::GuardianStopJump);
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("❌ IA_Jump is NULL!")); }
-
-	// Bind GuardianInteract action
-	if (GetIA_Interact())
-	{
-		EnhancedInputComponent->BindAction(GetIA_Interact(), ETriggerEvent::Started, GuardianCharacter, &AGuardianCharacter::StartInteract);
-		EnhancedInputComponent->BindAction(GetIA_Interact(), ETriggerEvent::Completed, GuardianCharacter, &AGuardianCharacter::StopInteract);
-	}
-	else { UE_LOG(LogTemp, Error, TEXT("❌ IA_Interact is NULL!")); }
 
 	// Bind GuardianLook action
 	if (GetIA_Look())
@@ -160,11 +140,4 @@ void AGuardianController::BindInputs(AGuardianCharacter* GuardianCharacter, UEnh
 		EnhancedInputComponent->BindAction(GetIA_Look(), ETriggerEvent::Triggered, GuardianCharacter, &AGuardianCharacter::GuardianLook);
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("❌ IA_Look is NULL!")); }
-
-	// Bind GuardianEscape action
-	if (GetIA_Escape())
-	{
-		EnhancedInputComponent->BindAction(GetIA_Escape(), ETriggerEvent::Started, GuardianCharacter, &AGuardianCharacter::GuardianEscape);
-	}
-	else { UE_LOG(LogTemp, Error, TEXT("❌ IA_Escape is NULL!")); }
 }

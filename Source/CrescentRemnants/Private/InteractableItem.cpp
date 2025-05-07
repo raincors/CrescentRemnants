@@ -3,14 +3,15 @@
 
 #include "InteractableItem.h"
 
+#include "Components/CapsuleComponent.h"
 #include "Components/PointLightComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/Character.h"
 
-/** Worth knowing is that any class deriving off of AWorldObject, runs its constructor to initialize components and apply
+/** Worth knowing is that any class deriving off of AWorldObject runs its constructor to initialise components and apply
  * a default set of variables. The C++ implementation of doing things; the back-up plan, or Plan B.
  *
- * All components initialized here in the constructor, will be inherited and already initialized for subclasses.
+ * All components initialised here in the constructor will be inherited and already initialised for subclasses.
  * Inherited classes should only add new components or modify the existing components.
  */
 AInteractableItem::AInteractableItem()
@@ -18,16 +19,33 @@ AInteractableItem::AInteractableItem()
 	// Set this actor to call Tick() every frame. Set to false as default in WorldObject.
 	PrimaryActorTick.bCanEverTick = false;
 	
-	bOneTimeUseOnly = false;
+	// Override parent class defaults as InteractableItem constructor defaults.
+	bIsActivated = false;    // InteractableItems are not activated by default.
+	bIsPickup = false;       // This isn't a regular pickup
+	bIsInteractable = true;  // Player interacts with InteractableItems.
+	bOneTimeUseOnly = false; // InteractableItems are NOT only used once.
+	bEnableFloating = false; // InteractableItems should not float.
+	bIsLightOn = false;      // InteractableItems should not have lights on until activated via overlap.
+
+	ObjectMeshScale = FVector(1.f, 1.f, 1.f); // Default Mesh Scale for InteractableItems.
+
+	CapsuleLocationOffset = FVector(0.f, 0.f, 0.f); // Default CapsuleLocationOffset for InteractableItems.
+	CapsuleHalfHeight = 250.f; // Default CapsuleHalfHeight for InteractableItems.
+	CapsuleRadius = 250.f;	// Default CapsuleRadius for InteractableItems.
+
+	ObjectLightLocation = FVector(0.f, 0.f, 0.f); // Default LightLocation for InteractableItems.
+	LightIntensity = 1500.f; // Default LightIntensity for InteractableItems.
+	LightAttenuationRadius = 800.f; // Default LightAttenuationRadius for InteractableItems.
+	LightSourceRadius = 350.f; // Default LightSourceRadius for InteractableItems.
+
+	// Setting a constructor default DebugColour and LightColour
+	DebugColour = FColor::Cyan;
+	LightColour = FColor::Blue;
 
 	// Changing the inherited CapsuleCompSize to be the default Interactable settings
-	ObjectCapsuleComp->SetCapsuleSize(InteractableCapsuleRadius, InteractableCapsuleHalfHeight);
+	ObjectCapsuleComp->SetCapsuleSize(CapsuleRadius, CapsuleHalfHeight);
 	
-	// Setting a constructor default DebugColour and LightColour
-	DebugColour = FColor::Green;
-	LightColour = FColor::Emerald;
-	
-	// InteractableOverlapSphere = CreateDefaultSubobject<USphereComponent>(TEXT("InteractableOverlapSphere"));
+	InteractableOverlapSphere = CreateDefaultSubobject<USphereComponent>(TEXT("InteractableOverlapSphere"));
 
 	if (InteractableOverlapSphere)
 	{
@@ -38,11 +56,8 @@ AInteractableItem::AInteractableItem()
 
 bool AInteractableItem::UseWorldObjectAssetSettings()
 {
-	if (Super::UseWorldObjectAssetSettings())
-	{
-		Super::UseWorldObjectAssetSettings();
-	}
-	else
+	// If we can find AssetSettings, use them. If not, use defaults from constructor instead.
+	if (!Super::UseWorldObjectAssetSettings())
 	{
 		return false;
 	}
@@ -51,7 +66,7 @@ bool AInteractableItem::UseWorldObjectAssetSettings()
 	bIsPickup = SettingsAsset->bIsPickup;
 	bIsInteractable = SettingsAsset->bIsInteractable;
 	bDestroyOnInteract = SettingsAsset->bDestroyOnInteract;
-	bInteractionTogglesLight = SettingsAsset->bInteractionTogglesLight;
+	bOverlapTogglesLight = SettingsAsset->bOverlapTogglesLight;
 	bIsActivated = SettingsAsset->bIsActivated;
 
 	// Can we see the OverlapSphere in PlayMode?
@@ -67,8 +82,7 @@ bool AInteractableItem::UseWorldObjectAssetSettings()
 		InteractableOverlapSphere->SetHiddenInGame(bDebugIsOverlapSphereVisible);
 	}
 
-	// TODO: Add Interactable World Settings that needs to be stored locally or something.
-
+	// TODO: Ensure and check all variables and bools are accounted for, both via assetSettings and the constructor.
 	
 	return true;
 }
@@ -81,13 +95,9 @@ void AInteractableItem::BeginPlay()
 	ObjectMeshComp->SetCollisionProfileName(GetMeshCollisionTag());
 }
 
-void AInteractableItem::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
+// PostEditChangeProperty needs to be Editor-only, otherwise you won't be able to build.
 #if WITH_EDITOR
-
+// For editing the C++ object properties inside the Editor. So you don't have to restart the Editor every time to see changes.
 void AInteractableItem::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
@@ -106,16 +116,14 @@ void AInteractableItem::PostEditChangeProperty(FPropertyChangedEvent& PropertyCh
 		bDebugIsOverlapSphereVisible = false;
 	}
 }
-
 #endif
 
 void AInteractableItem::PlayerEntersInteractable()
 {
+	// Don't run the below code unnecessarily if bIsActivated & bOneTimeUseOnly.
 	if (bIsActivated && bOneTimeUseOnly) return;
 	
 	Super::PlayerEntersInteractable();
-
-	ObjectPointLightComp->SetVisibility(bIsLightOn);
 	
 	if (!bIsActivated)
 	{
@@ -129,36 +137,33 @@ void AInteractableItem::PlayerEntersInteractable()
 		bIsActivated = false;
 	}
 }
-	
-void AInteractableItem::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                       UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	// The PlayerEntersInteractable function runs from APickup.
-	Super::OnBeginOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
-}
 
 void AInteractableItem::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 									UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (OtherActor && Cast<ACharacter>(OtherActor))
+	// Check if it's ACharacter
+	if (const ACharacter* Character = Cast<ACharacter>(OtherActor))
 	{
-		if (bDebugEnabled)
+		// Check if this character is controlled by a player (eliminate enemy AI from the logic)
+		if (Cast<APlayerController>(Character->GetController()))
 		{
-			FString objectName = this->GetName();
-			check(GEngine != nullptr);
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, DebugColour,TEXT("Player leaves me...! Remember me as " + objectName));
+			if (bDebugEnabled)
+			{
+				FString objectName = this->GetName();
+				check(GEngine != nullptr);
+				GEngine->AddOnScreenDebugMessage(-1, 5.0f, DebugColour,TEXT("Player leaves me...! Remember me as " + objectName));
+			}
 		}
-		
-		// TODO: Play a simple animation everytime the player enters a checkpoint, just a little wiggle or something.
 	}
 }
 
-// Have to manually add in components and make sure they are cast safely
+// Have to manually add in components and make sure they are cast safely.
+// Do not add a component more than once, for example, if calling Super::GetAllOverlapComponents.
 TArray<UPrimitiveComponent*> AInteractableItem::GetAllOverlapComponents() const
 {
 	TArray<UPrimitiveComponent*> OverlapComponents;
 	OverlapComponents.Add(ObjectCapsuleComp.Get());
-	// OverlapComponents.Add(Cast<UPrimitiveComponent>(InteractableOverlapSphere.Get()));
+	OverlapComponents.Add(Cast<UPrimitiveComponent>(InteractableOverlapSphere.Get()));
 	
 	return OverlapComponents;
 }
@@ -167,20 +172,7 @@ void AInteractableItem::OnPlayerInteract()
 {
 	UE_LOG(LogTemp, Warning, TEXT("%s was interacted with!"), *GetName());
 
-	// Play sound if assigned
-	/*if (InteractionSound)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, InteractionSound, GetActorLocation());
-	}*/
-
-	// Toggle the light, if enabled on the object
-	if (bInteractionTogglesLight)
-	{
-		bIsLightOn = !bIsLightOn;
-		ObjectPointLightComp->SetVisibility(bIsLightOn);
-	}
-
-	// Destroy object if set to do so
+	// Destroy this object if set to do so
 	if (bDestroyOnInteract)
 	{
 		if (bDebugEnabled)

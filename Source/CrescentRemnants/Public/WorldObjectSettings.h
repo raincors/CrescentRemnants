@@ -10,7 +10,21 @@ class AWorldObject;
 
 /**
  * This class is a template for when you create a Data Asset inside Unreal Engine (Under Miscellaneous).
- * In there, you can assign default meshes and stuff that classes can retrieve. Classes can also override 
+ * Once created, you can assign components and their properties like default meshes, materials, colliders, etc.
+ * The other classes can then retrieve this data and apply it during class construction.
+ *
+ * - Asset Settings
+ * - Debug Settings
+ * - Transform Settings
+ * - Mesh Settings
+ * - BoxCollision Settings (UNUSED)
+ * - SphereCollision Settings (UNUSED)
+ * - CapsuleCollision Settings
+ * - Float Settings
+ * - Light Settings
+ * - Interactable Settings (UNUSED)
+ * - Platform Settings
+ * - Hazard Settings (UNUSED)
  */
 UCLASS(BlueprintType)
 class CRESCENTREMNANTS_API UWorldObjectSettings : public UDataAsset
@@ -19,15 +33,18 @@ class CRESCENTREMNANTS_API UWorldObjectSettings : public UDataAsset
 
 public:
 
-	// Press this button while you're in the DataAsset to reload and see your changes. :)
+	/**
+	* WARNING: This function may cause the editor to become unresponsive or crash if called while making
+	* other changes. Always save your work before pressing this button / running this function.
+	* 
+	* This function applies the current settings from this DataAsset to all WorldObjects in the level
+	* that reference it.
+	*/
 	UFUNCTION(CallInEditor, Category = "Settings")
 	void ApplySettingsToAllObjects();
+
 	
 	// 📝 Asset Settings
-	
-	// Can instances override settings from the DataAsset?
-	UPROPERTY(EditAnywhere, Category = "Settings")
-	bool bAllowInstancesToOverride = false;
 
 	// Should objects run default settings using the dataAsset (true), or from their own constructors (false)?
 	UPROPERTY(EditAnywhere, Category = "Settings")
@@ -41,28 +58,33 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Settings")
 	bool bIsInteractable = false;
 
-	// Is this object only used once? Like a pickup, or a checkpoint.
-	UPROPERTY(EditAnywhere, Category = "Settings")
-	bool bOneTimeUse = false;
-
-	// Is this object floating? (Pickups, or even checkpoints and Platforms!)
-	UPROPERTY(EditAnywhere, Category = "Settings")
-	bool bEnableFloating = false;
-
 	// Is this a platform?
 	UPROPERTY(EditAnywhere, Category = "Settings")
 	bool bIsPlatform = false;
 
-	// Is this a hazard?
+	// Is this a hazard? (UNUSED)
 	UPROPERTY(EditAnywhere, Category = "Settings")
 	bool bIsHazard = false;
 
-	// Is this activated? Pickup floating, Checkpoint active, or platform moving, or hazard active etc...
+	// Is this object only used once? Like a pickup, or a checkpoint.
 	UPROPERTY(EditAnywhere, Category = "Settings")
-	bool bIsActivated = false;
+	bool bOneTimeUse = false;
+
+	// Is this object floating? Pickups, platforms, etc.
+	UPROPERTY(EditAnywhere, Category = "Settings")
+	bool bEnableFloating = false;
+
+	// If this object is floating, do you allow instances to have custom properties?
+	UPROPERTY(EditAnywhere, Category = "Settings", meta = (EditCondition = "bEnableFloating",
+		ToolTip = "If true, you can't override the float settings for this object instance via changing defaults in DataAssets."))
+	bool bUseCustomFloatSettings = false;
+
+	// Is this activated from the start? Pickup floating, Checkpoint active, or platform moving, or hazard active etc...
+	UPROPERTY(EditAnywhere, Category = "Settings")
+	bool bIsActivated = true;
 
 	
-	// 🐛 Debug Settings
+	// 🐛 Debug Settings (Note that some debug settings are located inside other settings, due to dependencies)
 	
 	// Do we enable debugging on the object?
 	UPROPERTY(EditAnywhere, Category = "Debug")
@@ -81,7 +103,7 @@ public:
 	FVector DefaultObjectScale = FVector(1.f, 1.f, 1.f);
 
 	
-	// 🌟 Visual Settings
+	// 🌟 Mesh Settings
 	
 	UPROPERTY(EditAnywhere, Category = "Visuals", meta = (EditCondition = "bHasMesh", EditConditionHides))
 	bool bHasMesh = true;
@@ -91,6 +113,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category = "Visuals", meta = (EditCondition = "bHasMesh", EditConditionHides))
 	TSoftObjectPtr<UMaterialInterface> DefaultMaterial = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = "Visuals", meta = (EditCondition = "bHasMesh", EditConditionHides))
+	FVector DefaultObjectMeshLocationOffset = FVector(0.f, 0.f, 0.f);
 	
 	UPROPERTY(EditAnywhere, Category = "Visuals", meta = (EditCondition = "bHasMesh", EditConditionHides))
 	FRotator DefaultObjectMeshRotation = FRotator(0.f, 0.f, 0.f);
@@ -99,13 +124,13 @@ public:
 	FVector DefaultObjectMeshScale = FVector(1.f, 1.f, 1.f);
 
 	
-	// 📦 Box Collision Overlap Settings
+	// 📦 Box Collision Settings - UNUSED
 	
 	UPROPERTY(EditAnywhere, Category = "Collision")
 	bool bHasBoxCollision = false;
 
 	UPROPERTY(EditAnywhere, Category = "Collision|Box", meta = (EditCondition = "bHasBoxCollision && bEnableDebug"))
-	bool bDebugIsBoxCollisionVisible = true;
+	bool bDebugIsBoxCollisionVisible = false;
 
 	UPROPERTY(EditAnywhere, Category = "Collision|Box", meta = (EditCondition = "bHasBoxCollision", EditConditionHides))
 	FVector DefaultBoxLocation = FVector(0.f, 0.f, 0.f);
@@ -117,22 +142,22 @@ public:
 	FVector DefaultBoxExtents = FVector(60.f, 60.f, 60.f);
 
 	
-	// ⚽ Sphere Collision Overlap Settings
+	// ⚽ Sphere Collision Settings - UNUSED
 	
 	UPROPERTY(EditAnywhere, Category = "Collision")
 	bool bHasSphereCollision = false;
 
 	UPROPERTY(EditAnywhere, Category = "Collision|Sphere", meta = (EditCondition = "bHasSphereCollision && bEnableDebug"))
-	bool bDebugIsSphereCollisionVisible = true;
+	bool bDebugIsSphereCollisionVisible = false;
 	
 	UPROPERTY(EditAnywhere, Category = "Collision|Sphere", meta = (EditCondition = "bHasSphereCollision", EditConditionHides))
 	FVector DefaultSphereLocation = FVector(0.f, 0.f, 0.f);
 
 	UPROPERTY(EditAnywhere, Category = "Collision|Sphere", meta = (EditCondition = "bHasSphereCollision", EditConditionHides))
-	float DefaultSphereRadius = 200.f;
+	float DefaultSphereRadius = 60.f;
 
 	
-	// 💊 Capsule Collision Overlap Settings
+	// 💊 Capsule Collision Settings
 	
 	UPROPERTY(EditAnywhere, Category = "Collision")
 	bool bHasCapsuleCollision = false;
@@ -153,14 +178,36 @@ public:
 	float DefaultCapsuleRadius = 60.f;;
 
 	
-	// 🛟 Float Settings (For pickups (and maybe hazards))
+	// 🛟 Float Settings 
+
+	// Which axis should the object float along? The default is Z-axis (up/down).
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Float", meta = (EditCondition = "bEnableFloating", EditConditionHides,
+		ToolTip = "The axis along which the object will float. Use (1,0,0) for X, (0,1,0) for Y, or (0,0,1) for Z"))
+	FVector DefaultFloatAxis = FVector(0.f, 0.f, 1.f);
+
+	// Starting offset in the float range (-1.0 to 1.0), where 0.0 is center, 1.0 is top, -1.0 is bottom.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Float", meta = (EditCondition = "bEnableFloating", EditConditionHides, 
+		ClampMin = "-1.0", ClampMax = "1.0"))
+	float DefaultFloatStartPosition = 0.0f;
+
+	// Does the object start moving in a positive direction?
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Float", meta = (EditCondition = "bEnableFloating", EditConditionHides,
+		ToolTip = "If true, movement will start in the positive direction along the chosen axis. If false, it will start in the negative direction."))
+	bool bStartInPositiveDirection = true;
+
+	// Should we use sine wave movement (smooth) or ping-pong movement (consistent)?
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Float", meta = (EditCondition = "bEnableFloating", EditConditionHides))
+	bool bUseSineWave = true;
 	
-	
-	UPROPERTY(EditAnywhere, Category = "Movement", meta = (EditCondition = "bEnableFloating", EditConditionHides))
+	UPROPERTY(EditAnywhere, Category = "Float", meta = (EditCondition = "bEnableFloating", EditConditionHides))
 	float DefaultFloatingDistance = 10.f;
 
-	UPROPERTY(EditAnywhere, Category = "Movement", meta = (EditCondition = "bEnableFloating", EditConditionHides))
-	float DefaultFloatingSpeed = 1.5f;
+	UPROPERTY(EditAnywhere, Category = "Float", meta = (EditCondition = "bEnableFloating", EditConditionHides))
+	float DefaultFloatingSpeed = 2.2f;
+
+	// Float Settings - When about to switch directions, how long do you stop before continuing to float?
+	UPROPERTY(EditAnywhere, Category = "Float", meta = (EditCondition = "bEnableFloating", EditConditionHides))
+	float DefaultFloatStopDelay = 0.0f;
 
 	
 	// 💡 Light Settings (for pickups or platforms that glow)
@@ -169,7 +216,7 @@ public:
 	bool bHasLightComponent = false;
 
 	UPROPERTY(EditAnywhere, Category = "Light", meta = (EditCondition = "bHasLightComponent", EditConditionHides))
-	FVector DefaultLightLocation = FVector(0.f, 0.f, -30.f);
+	FVector DefaultLightLocation = FVector(0.f, 0.f, -40.f);
 
 	UPROPERTY(EditAnywhere, Category = "Light", meta = (EditCondition = "bHasLightComponent", EditConditionHides))
 	bool bIsLightOn = false;
@@ -178,28 +225,19 @@ public:
 	float DefaultLightIntensity = 400.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Light", meta = (EditCondition = "bHasLightComponent", EditConditionHides))
-	float DefaultAttenuationRadius = 300.f;
+	float DefaultAttenuationRadius = 200.f;
 
 	UPROPERTY(EditAnywhere, Category = "Light", meta = (EditCondition = "bHasLightComponent", EditConditionHides))
-	float DefaultLightSourceRadius = 200.f;
+	float DefaultLightSourceRadius = 100.f;
 
 	UPROPERTY(EditAnywhere, Category = "Light", meta = (EditCondition = "bHasLightComponent", EditConditionHides))
 	FColor DefaultLightColour = FColor::White;
-
-	
-	// 🔉 Sound Settings
-	
-	UPROPERTY(EditAnywhere, Category = "Sound")
-	TSoftObjectPtr<USoundBase> DefaultSound = nullptr;
-
-	UPROPERTY(EditAnywhere, Category = "Sound")
-	bool bActivateOnSpawn = false;
 	
 
 	// 🧩 Interactable (for interactable objects and checkpoints)
 	
 	UPROPERTY(EditAnywhere, Category = "Interactable", meta = ( EditCondition = "bIsInteractable", EditConditionHides))
-	bool bInteractionTogglesLight = false;
+	bool bOverlapTogglesLight = true;
 	
 	UPROPERTY(EditAnywhere, Category = "Interactable", meta = ( EditCondition = "bIsInteractable", EditConditionHides))
 	bool bDestroyOnInteract = false;
@@ -211,13 +249,10 @@ public:
 	bool bIsBreakable = false;
 
 	UPROPERTY(EditAnywhere, Category = "Movement|Platform", meta = (EditCondition = "bIsPlatform", EditConditionHides))
-	float DefaultPlatformMoveSpeed = 150.f;
-
-	UPROPERTY(EditAnywhere, Category = "Movement|Platform", meta = (EditCondition = "bIsPlatform", EditConditionHides))
-	bool bMoveWhenPlayerOn = true;
+	bool bMoveOnlyWhenPlayerOn = true;
 
 	
-	// ⚠️ Hazard Settings (For obstacles)
+	// ⚠️ Hazard Settings (For obstacles) - UNUSED
 
 	UPROPERTY(EditAnywhere, Category = "Hazard", meta = (EditCondition = "bIsHazard", EditConditionHides))
 	bool isLethal = false;
