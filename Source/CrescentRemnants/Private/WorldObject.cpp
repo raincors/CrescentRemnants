@@ -69,8 +69,8 @@ bool AWorldObject::UseWorldObjectAssetSettings()
 	RootObjectScale = SettingsAsset->DefaultObjectScale;
 	
 	// Applying the new Root Rotation and Scale
-	ObjectRoot->SetWorldRotation(SettingsAsset->DefaultObjectRotation);
-	ObjectRoot->SetWorldScale3D(SettingsAsset->DefaultObjectScale);
+	ObjectRoot->SetWorldRotation(RootObjectRotation);
+	ObjectRoot->SetWorldScale3D(RootObjectScale);
 
 	return true;
 }
@@ -81,14 +81,12 @@ void AWorldObject::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
 
-	// Just for the base class - to avoid reloading the settings everytime OnConstruction runs. We only want to run it once.
-	if (!bAttemptedRetrievalOfSettings)
-	{
-		bAttemptedRetrievalOfSettings = true;
-		
-		// Using TSoftObjectPtr, we can load the AssetSettings more safely, which doesn't crash Unreal on start-up if there is an error.
-		// We're also using the virtual getter GetDefaultSettingAssetPath() that helps retrieve any paths to DefaultSettings.
-		TSoftObjectPtr<UWorldObjectSettings> WorldObjectSettings = TSoftObjectPtr<UWorldObjectSettings>
+	// Update InitialLocation whenever the actor is moved in the editor
+	InitialLocation = GetActorLocation();
+
+	// Using TSoftObjectPtr, we can load the AssetSettings more safely, which doesn't crash Unreal on start-up if there is an error.
+	// We're also using the virtual getter GetDefaultSettingAssetPath() that helps retrieve any paths to DefaultSettings.
+	TSoftObjectPtr<UWorldObjectSettings> WorldObjectSettings = TSoftObjectPtr<UWorldObjectSettings>
 		(FSoftObjectPath(GetDefaultSettingAssetPath()));
 
 		// Have we found the asset?
@@ -97,7 +95,7 @@ void AWorldObject::OnConstruction(const FTransform& Transform)
 			SettingsAsset = WorldObjectSettings.Get();
 			if (UseWorldObjectAssetSettings())
 			{
-				UE_LOG(LogTemp, Warning, TEXT("👍 Using Asset Settings in %s!"), *GetClass()->GetName());
+				UE_LOG(LogTemp, Warning, TEXT("👍 Using Asset Settings in %s!"), *GetName());
 			}
 			else
 			{
@@ -112,7 +110,7 @@ void AWorldObject::OnConstruction(const FTransform& Transform)
 				SettingsAsset = LoadedSettings.Get();
 				if (UseWorldObjectAssetSettings())
 				{
-					UE_LOG(LogTemp, Warning, TEXT("👍 Using Asset Settings in %s!"), *GetClass()->GetName());
+					UE_LOG(LogTemp, Warning, TEXT("👍 Using Asset Settings in %s!"), *GetName());
 				}
 				else
 				{
@@ -125,7 +123,6 @@ void AWorldObject::OnConstruction(const FTransform& Transform)
 			}
 		}
 	}
-}
 #endif
 
 /** Called when the game starts or when spawned. Stores the InitialLocation in-game for all actors inheriting from WorldObject.
